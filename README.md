@@ -1,0 +1,2 @@
+myphotostorage
+==============
