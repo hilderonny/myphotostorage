@@ -110,6 +110,25 @@ class Persistence {
 		return true;
 	}
 	
+	/**
+	 * Creates a column in a table with the given name when it does not exist.
+	 * 
+	 * @param string $tablename Name of the table to create a column for.
+	 * @param string $columnname Name of the column to create.
+	 * @param string $columndefinition Definition of the column in PostgreSQL format.
+	 * @return boolean True when column was created, false when column exists.
+	 */
+	static function createColumn($tablename, $columnname, $columndefinition) {
+		$tableprefix = $GLOBALS['tableprefix'];
+		$existingcolumns = self::query('select column_name from information_schema.columns where table_schema=\'public\' and  table_name = \''.$tableprefix.$tablename.'\' and column_name=\''.$columnname.'\'');
+		if (count($existingcolumns) > 0) {
+			return false;
+		}
+		$createquery = 'alter table '.$tableprefix.$tablename.' add column '.$columnname.' '.$columndefinition;
+		self::query($createquery);
+		return true;
+	}
+	
 	static function query($query) {
 		self::init();
 		$result = pg_query(self::$connection, $query);

@@ -124,14 +124,22 @@ class Install {
 	 * Creates a table (when not existing) and appends missing columns.
 	 * 
 	 * @param string $tablename Name of the table to create / extend
-	 * @param array $columns Array of column definitions in SQL format.
+	 * @param array $columns Array of column definitions with column names
+	 * as keys and column definitions as values in PostgreSQL format.
 	 * @return string Status message of the process for outputting in
 	 * install script.
 	 */
 	static function createAndUpdateTable($tablename, $columns = []) {
 		$result = '';
+		// (Try to) Create table
 		if (Persistence::createTable($tablename)) {
 			$result .= '<p>'.sprintf(__('Created table %s.'), $tablename).'</p>';
+		}
+		foreach ($columns as $columnname => $columndefinition) {
+			// Add column if not existent
+			if (Persistence::createColumn($tablename, $columnname, $columndefinition)) {
+				$result .= '<p>'.sprintf(__('Created column %s.%s.'), $tablename, $columnname).'</p>';
+			}
 		}
 		return $result;
 	}
@@ -141,11 +149,11 @@ class Install {
 	 */
 	static function createAndUpdateTables() {
 		$result = '';
-		$result .= self::createAndUpdateTable('media');
-		$result .= self::createAndUpdateTable('users');
-		$result .= self::createAndUpdateTable('albums');
-		$result .= self::createAndUpdateTable('albummedia');
-		$result .= self::createAndUpdateTable('mediacrons');
+		$result .= self::createAndUpdateTable('users', ['users_username' => 'text', 'users_password' => 'text', 'users_email' => 'text']);
+		$result .= self::createAndUpdateTable('media', ['media_filename' => 'text', 'media_mimetype' => 'text', 'media_location' => 'text', 'media_owner_users_id' => 'bigint references users(users_id) on delete cascade', 'media_status' => 'text']);
+		$result .= self::createAndUpdateTable('albums', ['albums_owner_users_id' => 'bigint references users(users_id) on delete cascade', 'albums_name' => 'text', 'albums_status' => 'text']);
+		$result .= self::createAndUpdateTable('albummedia', ['albummedia_albums_id' => 'bigint references albums(albums_id) on delete cascade', 'albummedia_media_id' => 'bigint references media(media_id) on delete cascade']);
+		$result .= self::createAndUpdateTable('mediacrons', ['mediacrons_media_id' => 'bigint references media(media_id) on delete cascade', 'mediacrons_action' => 'text']);
 		return $result;
 	}
 }

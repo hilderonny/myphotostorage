@@ -45,6 +45,11 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	$installationprogress = Install::createLocalConfig();
 	// Perform the database installation
 	$installationprogress .= Install::createAndUpdateTables($tableprefix);
+	// Rename the install script
+	rename('install.php', 'install.php.old');
+	$installationprogress .= sprintf(__('Renamed install script %s to %s.'), 'install.php', 'install.php.old');
+	// Redirect to index page
+	header('Location: index.php');
 } else {
 	// Single GET page call
 	$databasehost = 'localhost';
@@ -52,7 +57,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	$databasepassword = '';
 	$databasename = 'myphotostorage';
 	$tableprefix = '';
-	$databaseerror = false;
+	$databaseerror = true;
 	$installationprogress = false;
 }
 
