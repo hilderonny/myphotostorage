@@ -1,0 +1,4 @@
+DirectoryIndex index.php
+RewriteEngine On
+RewriteRule ^install.php$ - [L]
+RewriteRule .* index.php [L]
