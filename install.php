@@ -24,6 +24,11 @@
  * THE SOFTWARE.
  */
 
+/**
+ * This file is used for installation and gets renamed to install.php.old 
+ * after a successfull installation.
+ */
+
 require_once './include/helper.inc.php';
 
 // Handle postbacks for form
@@ -41,15 +46,22 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	$GLOBALS['tableprefix'] = $tableprefix;
 	// Check database connection
 	$databaseerror = !Install::canAccessDatabase();
-	// Store localconfig file
-	$installationprogress = Install::createLocalConfig();
-	// Perform the database installation
-	$installationprogress .= Install::createAndUpdateTables($tableprefix);
-	// Rename the install script
-	rename('install.php', 'install.php.old');
-	$installationprogress .= sprintf(__('Renamed install script %s to %s.'), 'install.php', 'install.php.old');
-	// Redirect to index page
-	header('Location: index.php');
+	if (!$databaseerror) {
+		// Store localconfig file
+		$installationprogress = Install::createLocalConfig();
+		// Perform the database installation
+		$installationprogress .= Install::createAndUpdateTables($tableprefix);
+		// Rename the install script
+		if (file_exists('install.php.old')) {
+			unlink('install.php.old');
+		}
+		rename('install.php', 'install.php.old');
+		$installationprogress .= sprintf(__('Renamed install script %s to %s.'), 'install.php', 'install.php.old');
+		// Redirect to index page
+		header('Location: index.php');
+	} else {
+		$installationprogress = false;
+	}
 } else {
 	// Single GET page call
 	$databasehost = 'localhost';
@@ -72,6 +84,7 @@ $ispostgresavailable = Install::isPostgresAvailable();
 <html>
 	<head>
 		<title><?php echo __('Install MyPhotoStorage') ?></title>
+		<link rel="stylesheet" href="static/css/install.css" />
 	</head>
 	<body>
 		<h1><?php echo __('Install MyPhotoStorage') ?></h1>
@@ -108,7 +121,6 @@ $ispostgresavailable = Install::isPostgresAvailable();
 				<input type="text" name="databasename" value="<?php echo $databasename ?>" />
 				<label><?php echo __('Table prefix') ?></label>
 				<input type="text" name="tableprefix" value="<?php echo $tableprefix ?>" />
-				<input type="submit" value="<?php echo __('Install') ?>" />
 				<?php else : ?>
 				<p class="error"><?php echo __('The PostgreSQL PHP extension is not available. Please install it. On Debian you can use "sudo apt-get install php5-pgsql"') ?></p>
 				<?php endif ?>
@@ -117,6 +129,7 @@ $ispostgresavailable = Install::isPostgresAvailable();
 				<?php else : ?>
 				<p class="success"><?php echo __('Database connection succeeded.') ?></p>
 				<?php endif ?>
+				<input type="submit" value="<?php echo __('Install') ?>" />
 			</div>
 			<?php if ($installationprogress) : ?>
 			<h2><?php echo __('Installation progress') ?></h2>

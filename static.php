@@ -25,27 +25,32 @@
  */
 
 /**
- * This file contains helper functions which make the developers life easier.
+ * Serves the static content and performs translations in js and css files.
+ * In these files all markers with ++##TEXT##-- will be translated.
  */
 
-/**
- * Translates the given string into the language currently used by the visitor.
- * 
- * @param string $str String to translate into the current language
- * @return string String translated into the current language
- */
-function __($str) {
-	return $str; // TODO: Make real translations
+require_once './include/helper.inc.php';
+
+// Construct the absolute file path
+$staticfilename = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT').filter_input(INPUT_SERVER, 'REQUEST_URI');
+if (!file_exists($staticfilename)) {
+	header("HTTP/1.0 404 Not Found");
+	exit;
 }
-
-/*
- * Autoloader. Each call to a class searches for a PHP file in the code
- * directory with the same name and requires it. If the class contains a
- * static __init__ function, the function gets called.
- */
-spl_autoload_register(function ($class) {
-	require_once 'code/'.$class.'.php';
-	if (is_callable($class.'::__init__')) {
-		$class::__init__();
-	}
-});
+// Determine the mime type
+if (substr($staticfilename, -4) === '.css') {
+	$mimetype = 'text/css';
+} elseif (substr($staticfilename, -3) === '.js') {
+	$mimetype = 'text/javascript';
+} else {
+	$mimetype = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $staticfilename);
+}
+// Translate the content by replacing the pattern ++##TEXT##-- with translated 
+// values
+$content = file_get_contents($staticfilename);
+$translatedcontent = preg_replace_callback('/\+\+\#\#(.*?)\#\#\-\-/', function($match) {
+	return __($match[1]);
+}, $content);
+// Send result to browser
+header('Content-Type: '.$mimetype);
+echo $translatedcontent;

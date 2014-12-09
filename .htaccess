@@ -1,4 +1,6 @@
 DirectoryIndex index.php
 RewriteEngine On
-RewriteRule ^install.php$ - [L]
-RewriteRule .* index.php [L]
+# All PHP files can be accessed with HTML ending. Looks better in search engines
+RewriteRule ^(.*).html$ $1.php
+# JS and CSS files are parsed to enable translations
+RewriteRule ^(static/css|static/js)(.*)$ static.php [L]
