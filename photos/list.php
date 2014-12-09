@@ -24,31 +24,11 @@
  * THE SOFTWARE.
  */
 
-/**
- * This file contains helper functions which make the developers life easier.
- * It also starts or resumes the session.
- */
+require_once '../include/helper.inc.php'; // TODO: Switch to authenticatedhelper.inc.php
 
-/**
- * Translates the given string into the language currently used by the visitor.
- * 
- * @param string $str String to translate into the current language
- * @return string String translated into the current language
- */
-function __($str) {
-	return Localization::translate($str);
-}
-
-/*
- * Autoloader. Each call to a class searches for a PHP file in the code
- * directory with the same name and requires it. If the class contains a
- * static __init__ function, the function gets called.
- */
-spl_autoload_register(function ($class) {
-	require_once 'code/'.$class.'.php';
-	if (is_callable($class.'::__init__')) {
-		$class::__init__();
-	}
-});
-
-session_start();
+?><!DOCTYPE html>
+<html>
+	<body>
+		<a href="../?action=logout">Logout</a>
+	</body>
+</html>

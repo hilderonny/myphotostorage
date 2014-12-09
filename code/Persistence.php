@@ -65,7 +65,7 @@ class Persistence {
 		$values = array_values($data);
 		$escapedvalues = [];
 		foreach ($values as $value) {
-			$escapedvalues[] = pg_escape_string(self::$connection, $value);
+			$escapedvalues[] = self::escape($value);
 		}
 		$query = 'insert into '.$tableprefix.$tablename.' ('.implode(',', array_keys($data)).') values (\''.implode('\',\'', $escapedvalues).'\')';
 		self::query($query);
@@ -85,7 +85,7 @@ class Persistence {
 		$tableprefix = $GLOBALS['tableprefix'];
 		$setvalues = [];
 		foreach ($data as $key => $value) {
-			$setvalues[] = $key.'="'.pg_escape_string(self::$connection, $value).'"';
+			$setvalues[] = $key.'="'.self::escape($value).'"';
 		}
 		$query = 'update '.$tableprefix.$tablename.' set '.implode(',', $setvalues).' where '.$tableprefix.$tablename.'_id='.$id;
 		self::query($query);
@@ -129,6 +129,14 @@ class Persistence {
 		return true;
 	}
 	
+	/**
+	 * Executes the given query and returns an array of associated arrays
+	 * for the result.
+	 * 
+	 * @param string $query Query to perform
+	 * @return array Array of rows of the result or nothing when the  query has no result.
+	 * @throws Exception Qhen the query contains an error.
+	 */
 	static function query($query) {
 		self::init();
 		$result = pg_query(self::$connection, $query);
@@ -143,5 +151,16 @@ class Persistence {
 		} else {
 			throw new Exception('Error in query: '.$query);
 		}
+	}
+	
+	/**
+	 * Returns the escaped string for the given value, safe to insert into the database.
+	 * 
+	 * @param string $value Value to escape
+	 * @return string Escaped value
+	 */
+	static function escape($value) {
+		self::init();
+		return pg_escape_string(self::$connection, $value);
 	}
 }
