@@ -31,6 +31,13 @@
 
 require_once './include/helper.inc.php';
 
+// Check file permissions
+$candeleteinstallsript = Install::canDeleteInstallScript();
+$canwritelocalconfig = Install::canWriteLocalConfig();
+$canwritemediadir = Install::canWriteMediaDir();
+$canwritelocaledir = Install::canWriteLocaleDir();
+$ispostgresavailable = Install::isPostgresAvailable();
+
 // Handle postbacks for form
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	// Form was posted back
@@ -39,14 +46,16 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	$databasepassword = filter_input(INPUT_POST, 'databasepassword');
 	$databasename = filter_input(INPUT_POST, 'databasename');
 	$tableprefix = filter_input(INPUT_POST, 'tableprefix');
+	$defaultlanguage = filter_input(INPUT_POST, 'defaultlanguage');
 	$GLOBALS['databasehost'] = $databasehost;
 	$GLOBALS['databaseusername'] = $databaseusername;
 	$GLOBALS['databasepassword'] = $databasepassword;
 	$GLOBALS['databasename'] = $databasename;
 	$GLOBALS['tableprefix'] = $tableprefix;
+	$GLOBALS['defaultlanguage'] = $defaultlanguage;
 	// Check database connection
 	$databaseerror = !Install::canAccessDatabase();
-	if (!$databaseerror) {
+	if ($candeleteinstallsript && $canwritelocalconfig && $canwritemediadir && $canwritelocaledir && $ispostgresavailable && !$databaseerror) {
 		// Store localconfig file
 		$installationprogress = Install::createLocalConfig();
 		// Perform the database installation
@@ -58,7 +67,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		rename('install.php', 'install.php.old');
 		$installationprogress .= sprintf(__('Renamed install script %s to %s.'), 'install.php', 'install.php.old');
 		// Redirect to index page
-		header('Location: index.php');
+		header('Location: ./');
 	} else {
 		$installationprogress = false;
 	}
@@ -69,16 +78,10 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	$databasepassword = '';
 	$databasename = 'myphotostorage';
 	$tableprefix = '';
+	$defaultlanguage = 'en';
 	$databaseerror = true;
 	$installationprogress = false;
 }
-
-// Check file permissions
-$candeleteinstallsript = Install::canDeleteInstallScript();
-$canwritelocalconfig = Install::canWriteLocalConfig();
-$canwritemediadir = Install::canWriteMediaDir();
-$ispostgresavailable = Install::isPostgresAvailable();
-
 
 ?><!DOCTYPE html>
 <html>
@@ -106,6 +109,11 @@ $ispostgresavailable = Install::isPostgresAvailable();
 				<?php else : ?>
 				<p class="error"><?php echo sprintf(__('Media directory is not writeable. Please make sure that the webserver process has write permissions to the directory %s'), Install::$mediaDir) ?></p>
 				<?php endif ?>
+				<?php if ($canwritelocaledir) : ?>
+				<p class="success"><?php echo __('Locale directory is writeable.') ?></p>
+				<?php else : ?>
+				<p class="error"><?php echo sprintf(__('Locale directory is not writeable. Please make sure that the webserver process has write permissions to the directory %s'), Install::$localeDir) ?></p>
+				<?php endif ?>
 			</div>
 			<h2><?php echo __('Database connection') ?></h2>
 			<div>
@@ -129,6 +137,13 @@ $ispostgresavailable = Install::isPostgresAvailable();
 				<?php else : ?>
 				<p class="success"><?php echo __('Database connection succeeded.') ?></p>
 				<?php endif ?>
+			</div>
+			<h2><?php echo __('Language') ?></h2>
+			<div>
+				<label><?php echo __('Default language') ?></label>
+				<input type="text" name="defaultlanguage" value="<?php echo $defaultlanguage ?>" />
+			</div>
+			<div>
 				<input type="submit" value="<?php echo __('Install') ?>" />
 			</div>
 			<?php if ($installationprogress) : ?>

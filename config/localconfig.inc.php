@@ -1,6 +1,7 @@
 <?php
 $GLOBALS['databasehost'] = 'localhost';
-$GLOBALS['databaseusername'] = '';
-$GLOBALS['databasepassword'] = '';
+$GLOBALS['databaseusername'] = 'myphotostorage';
+$GLOBALS['databasepassword'] = 'hammelbammel';
 $GLOBALS['databasename'] = 'myphotostorage';
 $GLOBALS['tableprefix'] = '';
+$GLOBALS['defaultlanguage'] = 'en';

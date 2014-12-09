@@ -48,6 +48,11 @@ class Install {
 	static $mediaDir = './data/media/';
 	
 	/**
+	 * @var string Path of the locale directory
+	 */
+	static $localeDir = './locale/';
+	
+	/**
 	 * Tests whether the system can write to the file 
 	 * config/localconfig.inc.php and returns true on success.
 	 * 
@@ -78,6 +83,17 @@ class Install {
 	 */
 	static function canWriteMediaDir() {
 		return is_writable(self::$mediaDir);
+	}
+	
+	/**
+	 * Tests whether the system can write into the locale directory
+	 * and returns true on success.
+	 * 
+	 * @return boolean True when the locale directory can be written, 
+	 * false otherwise
+	 */
+	static function canWriteLocaleDir() {
+		return is_writable(self::$localeDir);
 	}
 	
 	/**
@@ -115,7 +131,8 @@ class Install {
 			.'$GLOBALS[\'databaseusername\'] = \''.$GLOBALS['databaseusername'].'\';'."\n"
 			.'$GLOBALS[\'databasepassword\'] = \''.$GLOBALS['databasepassword'].'\';'."\n"
 			.'$GLOBALS[\'databasename\'] = \''.$GLOBALS['databasename'].'\';'."\n"
-			.'$GLOBALS[\'tableprefix\'] = \''.$GLOBALS['tableprefix'].'\';'."\n";
+			.'$GLOBALS[\'tableprefix\'] = \''.$GLOBALS['tableprefix'].'\';'."\n"
+			.'$GLOBALS[\'defaultlanguage\'] = \''.$GLOBALS['defaultlanguage'].'\';'."\n";
 		file_put_contents(self::$localConfigFileName, $content, LOCK_EX);
 		return '<p>'.sprintf(__('Created localconfig.inc.php with content "%s".'), htmlentities($content)).'</p>';
 	}

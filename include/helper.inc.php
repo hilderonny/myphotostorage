@@ -35,7 +35,7 @@
  * @return string String translated into the current language
  */
 function __($str) {
-	return $str; // TODO: Make real translations
+	return Localization::translate($str);
 }
 
 /*

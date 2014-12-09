@@ -1,3 +1,4 @@
+Options -Indexes
 DirectoryIndex index.php
 RewriteEngine On
 # All PHP files can be accessed with HTML ending. Looks better in search engines
