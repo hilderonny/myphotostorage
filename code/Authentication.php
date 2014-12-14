@@ -45,6 +45,7 @@ class Authentication {
 		$userquery = sprintf('select users_id, users_username, users_password from users where users_username=\'%s\'', $escapedusername);
 		$users = Persistence::query($userquery);
 		if (count($users) < 1) {
+			sleep(2); // Against brute force attacks
 			self::logout();
 			return __('Username or password incorrect.');
 		}
@@ -52,13 +53,14 @@ class Authentication {
 		if ($passwordishashed) {
 			// The hashed password coming from the cookies is a hash of the username plus the hashed password
 			// I think this could be secure enough, isn't it?
-			$hashfromdatabase = password_hash($username.$user['users_password'], PASSWORD_DEFAULT);
-			if (password_verify($password, $hashfromdatabase)) {
+			if (password_verify($username.$user['users_password'], $password)) {
+				sleep(2); // Against brute force attacks
 				self::logout();
 				return __('Username or password incorrect.');
 			}
 		} else {
 			if (!password_verify($password, $user['users_password'])) {
+				sleep(2); // Against brute force attacks
 				self::logout();
 				return __('Username or password incorrect.');
 			}
@@ -118,4 +120,44 @@ class Authentication {
 		Persistence::insert('users', $data);
 		return self::login($username, $password);
 	}
+        
+    /**
+     * Returns an user identified by his email. Can be false when no user
+     * with the given email exists.
+     * 
+     * @param string $email Email of the user to get
+     */
+    static function getUserByEmail($email) {
+        $escapedemail = Persistence::escape($email);
+        $userquery = sprintf('select users_id, users_username, users_password from users where users_email=\'%s\'', $escapedemail);
+        $users = Persistence::query($userquery);
+        if (count($users) < 1) {
+            return false;
+        }
+        return $users[0];
+    }
+    
+    /**
+     * Returns a list of all users, unordered.
+     * Used for validating password reset link.
+     * 
+     * @return array List of all users
+     */
+    static function getAllUsers() {
+        return Persistence::query('select * from users');
+    }
+    
+    /**
+     * Sets the password for an user. Used by password reset form.
+     * 
+     * @param string $userid Id of the user to set the password for
+     * @param string $password Password to set
+     */
+    static function setUserPassword($userid, $password) {
+        $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+        $data = [
+            'users_password' => Persistence::escape($hashedpassword)
+        ];
+        Persistence::update('users', $data, $userid);
+    }
 }

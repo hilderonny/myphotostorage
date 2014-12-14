@@ -60,14 +60,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		$installationprogress = Install::createLocalConfig();
 		// Perform the database installation
 		$installationprogress .= Install::createAndUpdateTables($tableprefix);
-		// Rename the install script
-		if (file_exists('install.php.old')) {
-			unlink('install.php.old');
-		}
-		rename('install.php', 'install.php.old');
-		$installationprogress .= sprintf(__('Renamed install script %s to %s.'), 'install.php', 'install.php.old');
-		// Redirect to index page
-		header('Location: ./');
+		$installationprogress .= '<p class="success">'.sprintf(__('The installation is completed. You should now delete the $s file for security reasons.'), 'install.php').'</p>';
 	} else {
 		$installationprogress = false;
 	}

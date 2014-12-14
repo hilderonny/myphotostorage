@@ -85,7 +85,7 @@ class Persistence {
 		$tableprefix = $GLOBALS['tableprefix'];
 		$setvalues = [];
 		foreach ($data as $key => $value) {
-			$setvalues[] = $key.'="'.self::escape($value).'"';
+			$setvalues[] = $key.'=\''.self::escape($value).'\'';
 		}
 		$query = 'update '.$tableprefix.$tablename.' set '.implode(',', $setvalues).' where '.$tableprefix.$tablename.'_id='.$id;
 		self::query($query);

@@ -45,10 +45,29 @@ class Localization {
 	static $translations = false;
 	
 	/**
-	 * Remember the current visitor's language for the request.
-	 * @var string Current visitor's language
+	 * Remember the preferred visitor's language for the request.
+	 * @var string Preferred visitor's language
 	 */
-	static $currentvisitorlanguage = false;
+	static $preferredvisitorlanguage = false;
+        
+        /**
+         * Returns the language currently preferred by the visitor
+         * 
+         * @return string Two digit language code in lower case
+         */
+        static function getPreferredVisitorLanguage() {
+            if (!self::$preferredvisitorlanguage) {
+                    // Get preferred visitor language
+                    $acceptedvisitorlanguages = filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE');
+                    if (empty($acceptedvisitorlanguages)) {
+                            self::$preferredvisitorlanguage = $GLOBALS['defaultlanguage'] ?: 'en';
+                    } else {
+                            $languagelist = explode(',', $acceptedvisitorlanguages);
+                            self::$preferredvisitorlanguage = strtolower(explode('-', $languagelist[0])[0]);
+                    }
+            }
+            return self::$preferredvisitorlanguage;
+        }
 	
 	/**
 	 * Translates the given string into the visitor's language or into the default
@@ -58,39 +77,30 @@ class Localization {
 	 * @return string Translated string
 	 */
 	static function translate($str) {
-		if (!self::$currentvisitorlanguage) {
-			// Get preferred visitor language
-			$acceptedvisitorlanguages = filter_input(INPUT_SERVER, 'HTTP_ACCEPT_LANGUAGE');
-			if (empty($acceptedvisitorlanguages)) {
-				self::$currentvisitorlanguage = $GLOBALS['defaultlanguage'] ?: 'en';
-			} else {
-				$languagelist = explode(',', $acceptedvisitorlanguages);
-				self::$currentvisitorlanguage = explode('-', $languagelist[0])[0];
-			}
-		}
-		// Get translations or load them
-		if (!self::$translations) {
-			$languagetousefilename = 'locale/'.self::$currentvisitorlanguage.'.json';
-			if (!file_exists($languagetousefilename)) {
-				$defaultlanguage = $GLOBALS['defaultlanguage'] ?: 'en';
-				$defaultlanguagefilename = 'locale/'.$defaultlanguage.'.json';
-				if (self::$currentvisitorlanguage === $defaultlanguage || !file_exists($defaultlanguagefilename)) {
-					file_put_contents($languagetousefilename, json_encode([], JSON_PRETTY_PRINT), LOCK_EX);
-				} else {
-					copy($defaultlanguagefilename, $languagetousefilename);
-				}
-			}
-			self::$translations = json_decode(file_get_contents($languagetousefilename), true);
-		}
-		// Check whether a translation exists
-		if (!array_key_exists($str, self::$translations)) {
-			$languagetousefilename = 'locale/'.self::$currentvisitorlanguage.'.json';
-			self::$translations[$str] = $str;
-			ksort(self::$translations);
-			file_put_contents($languagetousefilename, json_encode(self::$translations, JSON_PRETTY_PRINT), LOCK_EX);
-			return $str;
-		} else {
-			return self::$translations[$str];
-		}
+            $prefferedlanguage = self::getPreferredVisitorLanguage();
+            // Get translations or load them
+            if (!self::$translations) {
+                    $languagetousefilename = 'locale/'.$prefferedlanguage.'.json';
+                    if (!file_exists($languagetousefilename)) {
+                            $defaultlanguage = $GLOBALS['defaultlanguage'] ?: 'en';
+                            $defaultlanguagefilename = 'locale/'.$defaultlanguage.'.json';
+                            if ($prefferedlanguage === $defaultlanguage || !file_exists($defaultlanguagefilename)) {
+                                    file_put_contents($languagetousefilename, json_encode([], JSON_PRETTY_PRINT), LOCK_EX);
+                            } else {
+                                    copy($defaultlanguagefilename, $languagetousefilename);
+                            }
+                    }
+                    self::$translations = json_decode(file_get_contents($languagetousefilename), true);
+            }
+            // Check whether a translation exists
+            if (!array_key_exists($str, self::$translations)) {
+                    $languagetousefilename = 'locale/'.$prefferedlanguage.'.json';
+                    self::$translations[$str] = $str;
+                    ksort(self::$translations);
+                    file_put_contents($languagetousefilename, json_encode(self::$translations, JSON_PRETTY_PRINT), LOCK_EX);
+                    return $str;
+            } else {
+                    return self::$translations[$str];
+            }
 	}
 }

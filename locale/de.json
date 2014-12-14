@@ -1,7 +1,9 @@
 {
+    "A password reset link was sent to the email address you typed in. Please check your inbox for further instructions.": "A password reset link was sent to the email address you typed in. Please check your inbox for further instructions.",
     "Cannot access database. Please check the settings above.": "Cannot access database. Please check the settings above.",
     "Config file is not writeable. Please make sure that the webserver process has write permissions to the file %s": "Config file is not writeable. Please make sure that the webserver process has write permissions to the file %s",
     "Config file is writeable.": "Config file is writeable.",
+    "Create account": "Create account",
     "Created column %s.%s.": "Created column %s.%s.",
     "Created localconfig.inc.php with content \"%s\".": "Created localconfig.inc.php with content \"%s\".",
     "Created table %s.": "Created table %s.",
@@ -31,16 +33,21 @@
     "MyPhotoStorage Registration": "MyPhotoStorage Registration",
     "Password": "Password",
     "Please type your email address into the field below and click on \"Send\" to get a password reset mail.": "Please type your email address into the field below and click on \"Send\" to get a password reset mail.",
+    "Please type your new password into the fields below and click on \"Send\"  to set a new password.": "Please type your new password into the fields below and click on \"Send\"  to set a new password.",
     "PostgreSQL is available.": "PostgreSQL is available.",
     "Register": "Register",
     "Renamed install script %s to %s.": "Renamed install script %s to %s.",
     "Repeat password": "Repeat password",
+    "Request for password reset": "Request for password reset",
+    "Reset password": "Reset password",
     "Send": "Send",
+    "Sign up for a new account": "Sign up for a new account",
     "Table prefix": "Table prefix",
     "The PostgreSQL PHP extension is not available. Please install it. On Debian you can use \"sudo apt-get install php5-pgsql\"": "The PostgreSQL PHP extension is not available. Please install it. On Debian you can use \"sudo apt-get install php5-pgsql\"",
     "The passwords do not match.": "The passwords do not match.",
     "The username or email address is already in use. Please choose other ones.": "The username or email address is already in use. Please choose other ones.",
     "Username": "Username",
     "Username or password incorrect.": "Username or password incorrect.",
-    "Username, email address and password cannot be empty.": "Username, email address and password cannot be empty."
+    "Username, email address and password cannot be empty.": "Username, email address and password cannot be empty.",
+    "Your password was reset. You can now login with your username and your new password.": "Your password was reset. You can now login with your username and your new password."
 }

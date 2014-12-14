@@ -58,11 +58,74 @@ if ($action === 'register') { // Register
 		$password2 = '';
 	}
 } elseif ($action === 'forgotpassword') { // Forgot password
-	if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-		
-	} else {
-		$forgotpasswordsent = false;
-	}
+    $shownewpasswordform = false;
+    $key = filter_input(INPUT_GET, 'key');
+    if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
+        // Handle password reset postback
+        if ($key) {
+            $shownewpasswordform = true;
+            $password = filter_input(INPUT_POST, 'password');
+            $password2 = filter_input(INPUT_POST, 'password2');
+            if ($password !== $password2) {
+                $passwordreset = false;
+                $passwordresetdonotmatch = true;
+            } else {
+                var_dump($password);
+                var_dump($password2);
+                $users = Authentication::getAllUsers();
+                for ($i = 0; $i < count($users); $i++) {
+                    $user = $users[$i];
+                    if (password_verify($user['users_username'].$user['users_password'], $key)) {
+                        Authentication::setUserPassword($user['users_id'], $password);
+                        $passwordreset = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            $email = filter_input(INPUT_POST, 'email');
+            $user = Authentication::getUserByEmail($email);
+            if ($user) {
+                $GLOBALS['passwordforgetlinkparameter'] = password_hash($user['users_username'].$user['users_password'], PASSWORD_DEFAULT);
+                ob_start();
+                Templates::includeTemplate('ForgotPasswordEmail');
+                $content = ob_get_clean();
+                mail($email, __('Request for password reset'), $content);
+                $forgotpasswordsent = true;
+            }
+        }
+        /*
+         * Der Link enthält denselben secret, der auch im Cookie steht.
+         * Dort werden nur zwei Passwortfelder angezeigt. Nach Absenden
+         * werden alle user geladen und der cookie-hash für jeden Benutzer
+         * berechnet. Dieser wird mit dem Link-secret verglichen und bei
+         * Übereinstimmung das Passwort aktualisiert.
+         * Danach wird eine Erfolgsmeldung angezeigt, dass fortan mit dem neuen
+         * Passwort angemeldet werden kann. Es wird aber NICHT automatisch
+         * angemeldet und es wird auch kein Hinweis auf den Benutzernamen
+         * des Accounts gegeben. So kann ein kompromittierter Mail-Account
+         * zwar das Passwort eines Accounts ändern, der Hacker bekommt aber nicht raus,
+         * für welchen Benutzer das neue Passwort gilt.
+         * Ach ja, bei Fehlversuchen soll das Anmeldescript immer 2 Sekunden
+         * blockieren, bevor der Response zurück kommt. Damit werden BruteForce-
+         * Attacken erschwert.
+         */
+    } elseif ($key) {
+        $forgotpasswordsent = false;
+        // Link in email was clicked. Check the key for validity
+        $users = Authentication::getAllUsers();
+        for ($i = 0; $i < count($users); $i++) {
+            $user = $users[$i];
+            if (password_verify($user['users_username'].$user['users_password'], $key)) {
+                $shownewpasswordform = true;
+                $passwordreset = false;
+                $passwordresetdonotmatch = false;
+                break;
+            }
+        }
+    } else {
+        $forgotpasswordsent = false;
+    }
 } elseif ($action === 'logout') { // Logout
 	Authentication::logout();
 	header('Location: ?');
@@ -106,7 +169,7 @@ if ($action === 'register') { // Register
 	<body>
 		<?php if ($action === 'register') : ?>
 		<form method="post" action="?action=register">
-			<h1><?php echo __('MyPhotoStorage Registration') ?></h1>
+			<h1><?php echo __('Sign up for a new account') ?></h1>
 			<div>
 				<?php if ($registrationerror) : ?>
 				<p class="error"><?php echo $registrationerror ?></p>
@@ -119,11 +182,33 @@ if ($action === 'register') { // Register
 				<input type="password" name="password" value="<?php echo $password ?>" />
 				<label><?php echo __('Repeat password') ?></label>
 				<input type="password" name="password2" value="<?php echo $password2 ?>" />
-				<input type="submit" value="<?php echo __('Register') ?>" />
+				<input type="submit" value="<?php echo __('Create account') ?>" />
 			</div>
 			<a href="?action=login"><?php echo __('Login') ?></a>
 		</form>
 		<?php elseif ($action === 'forgotpassword') : ?>
+                <?php   if ($shownewpasswordform) : ?>
+		<form method="post" action="?action=forgotpassword&key=<?php echo urlencode($key) ?>">
+			<h1><?php echo __('Reset password') ?></h1>
+			<div>
+				<?php if ($passwordreset) : ?>
+				<p class="info"><?php echo __('Your password was reset. You can now login with your username and your new password.') ?></p>
+				<?php else : ?>
+				<?php   if ($passwordresetdonotmatch) : ?>
+				<p class="info"><?php echo __('The passwords do not match.') ?></p>
+                                <?php   endif ?>
+				<p><?php echo __('Please type your new password into the fields below and click on "Send"  to set a new password.') ?></p>
+				<label><?php echo __('Password') ?></label>
+				<input type="password" name="password" />
+				<label><?php echo __('Repeat password') ?></label>
+				<input type="password" name="password2" />
+				<input type="submit" value="<?php echo __('Send') ?>" />
+				<?php endif ?>
+			</div>
+			<a href="?action=login"><?php echo __('Login') ?></a>
+			<a href="?action=register"><?php echo __('Create account') ?></a>
+		</form>
+                <?php   else : ?>
 		<form method="post" action="?action=forgotpassword">
 			<h1><?php echo __('Forgot password') ?></h1>
 			<div>
@@ -136,8 +221,9 @@ if ($action === 'register') { // Register
 				<input type="submit" value="<?php echo __('Send') ?>" />
 			</div>
 			<a href="?action=login"><?php echo __('Login') ?></a>
-			<a href="?action=register"><?php echo __('Register') ?></a>
+			<a href="?action=register"><?php echo __('Create account') ?></a>
 		</form>
+                <?php   endif ?>
 		<?php else : ?>
 		<form method="post" action="?action=login">
 			<h1><?php echo __('MyPhotoStorage Login') ?></h1>
@@ -152,7 +238,7 @@ if ($action === 'register') { // Register
 				<input type="submit" value="<?php echo __('Login') ?>" />
 				<a href="?action=forgotpassword"><?php echo __('Forgot password?') ?></a>
 			</div>
-			<a href="?action=register"><?php echo __('Register') ?></a>
+			<a href="?action=register"><?php echo __('Create account') ?></a>
 		</form>
 		<?php endif ?>
 	</body>
