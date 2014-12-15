@@ -29,13 +29,13 @@ THE SOFTWARE.
 * { margin:0;padding:0;box-sizing: border-box; }
 html { font-family:sans-serif;background-color:#222; }
 
-form.register { background-color: #fff;width: 500px;margin: 20px auto;padding:0;border:1px solid #000; }
-form.register h1 { background-color:#333;color:#ddd;margin:0;padding:10px;border-bottom:1px solid #000; }
-form.register div { padding:10px; }
-form.register p { margin: 5px 0; }
-form.register label { display: inline-block;width:150px;color:#888;font-size:0.9em; }
-form.register input[type="text"], form.register input[type="email"], form.register input[type="password"] { display:inline-block;padding:3px; width:320px;margin:5px 0; }
-form.register input[type="submit"] { padding:3px 10px;margin:5px 0 5px 154px; }
+form.register, form.login { background-color: #fff;width: 500px;margin: 20px auto;padding:0;border:1px solid #000; }
+form.register h1, form.login h1 { background-color:#333;color:#ddd;margin:0;padding:10px;border-bottom:1px solid #000; }
+form.register div, form.login div { padding:10px; }
+form.register p, form.login p { margin: 5px 0; }
+form.register label, form.login label { display: inline-block;width:150px;color:#888;font-size:0.9em; }
+form.register input[type="text"], form.register input[type="email"], form.register input[type="password"], form.login input[type="text"], form.login input[type="email"], form.login input[type="password"] { display:inline-block;padding:3px; width:320px;margin:5px 0; }
+form.register input[type="submit"], form.login input[type="submit"] { padding:3px 10px;margin:5px 0 5px 154px; }
 
 p.notification { border:1px solid #888;background-color:#ccc;color:#888;padding:3px; }
 p.error { color:#800; background-color:#fcc;border-color:#800; }
@@ -43,11 +43,10 @@ p.success { color:#080; background: url(../img/success.png) no-repeat;padding-le
 
 
 @media (max-width:480px) {
-	form.register { width:100%;margin:0;border:none; }
-	form.register h1 { font-size:24px; }
-	form.register h2 { font-size:18px; }
-	form.register div { padding:10px; }
-	form.register label { display:block;font-size:12px;margin-top:10px; }
-	form.register input[type="text"], form.register input[type="email"], form.register input[type="password"] { display:block;padding:3px;margin:5px 0;width:100%;font-size:14px; }
-	form.register input[type="submit"] { padding:5px 15px;margin:10px 0;font-size:18px; }
+	form.register, form.login { width:100%;margin:0;border:none; }
+	form.register h1, form.login h1 { font-size:24px; }
+	form.register div, form.login div { padding:10px; }
+	form.register label, form.login label { display:block;font-size:12px;margin-top:10px; }
+	form.register input[type="text"], form.register input[type="email"], form.register input[type="password"], form.login input[type="text"], form.login input[type="email"], form.login input[type="password"] { display:block;padding:3px;margin:5px 0;width:100%;font-size:14px; }
+	form.register input[type="submit"], form.login input[type="submit"] { padding:5px 15px;margin:10px 0;font-size:18px; }
 }

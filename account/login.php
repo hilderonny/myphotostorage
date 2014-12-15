@@ -25,56 +25,60 @@
  */
 
 /**
- * Handles user registration and show a form for that
+ * Handles user login and show a form for that
  */
 
 require_once '../code/App.php';
 
 $redirecturl = filter_input(INPUT_GET, 'redirecturl') ?: '../photos/list.php';
 $username = filter_input(INPUT_POST, 'username');
-$email = filter_input(INPUT_POST, 'email');
 $password = filter_input(INPUT_POST, 'password');
-$password2 = filter_input(INPUT_POST, 'password2');
 $error = false;
 
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-    $error = Account::register($username, $email, $password, $password2);
-    if (!$error) {
-		$error = Account::login($username, $password);
-	    if (!$error) {
-			// Redirect the user to his photolist or to the redirecturl
+	$error = Account::login($username, $password);
+	if (!$error) {
+		// Redirect the user to his photolist or to the redirecturl
+		header('Location: '.$redirecturl);
+		exit;
+	}
+} else {
+	// First try automatic login
+	$cookieusername = filter_input(INPUT_COOKIE, 'username');
+	$cookiesecret = filter_input(INPUT_COOKIE, 'secret');
+	if ($cookieusername !== null && $cookiesecret !== null) {
+		$error = Account::login($cookieusername, $cookiesecret, true);
+		if (!$error) {
+			// Redirect the user to his photolist
 			header('Location: '.$redirecturl);
 			exit;
 		}
-    }
+	}
 }
 
 ?><!DOCTYPE html>
 <html>
     <head>
-        <title><?php echo __('Account registration') ?></title>
+        <title><?php echo __('MyPhotoStorage Login') ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
         <link rel="stylesheet" href="../static/css/default.css" />
     </head>
     <body>
-        <form method="post" class="register">
-            <h1><?php echo __('Register a new account') ?></h1>
-            <div>
-                <?php if ($error) : ?>
-                <p class="notification error"><?php echo $error ?></p>
-                <?php endif ?>
-                <label><?php echo __('Username') ?></label>
-                <input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" />
-                <label><?php echo __('Email address') ?></label>
-                <input type="email" name="email" value="<?php echo $email ?>" />
-                <label><?php echo __('Password') ?></label>
-                <input type="password" name="password" value="<?php echo $password ?>" />
-                <label><?php echo __('Repeat password') ?></label>
-                <input type="password" name="password2" value="<?php echo $password2 ?>" />
-                <input type="submit" value="<?php echo __('Create account') ?>" />
-            </div>
-            <div><a href="login.php"><?php echo __('Login') ?></a></div>
-        </form>
+		<form method="post" class="login">
+			<h1><?php echo __('MyPhotoStorage Login') ?></h1>
+			<div>
+				<?php if ($error) : ?>
+				<p class="notification error"><?php echo $error ?></p>
+				<?php endif ?>
+				<label><?php echo __('Username') ?></label>
+				<input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" />
+				<label><?php echo __('Password') ?></label>
+				<input type="password" name="password" />
+				<input type="submit" value="<?php echo __('Login') ?>" />
+			</div>
+			<div><a href="forgotpassword.php"><?php echo __('Forgot password?') ?></a></div>
+			<div><a href="register.php"><?php echo __('Register a new account') ?></a></div>
+		</form>
     </body>
 </html>
