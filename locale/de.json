@@ -33,6 +33,7 @@
     "Login": "Login",
     "Media directory is not writeable. Please make sure that the webserver process has write permissions to the directory %s": "Media directory is not writeable. Please make sure that the webserver process has write permissions to the directory %s",
     "Media directory is writeable.": "Media directory is writeable.",
+    "MyPhotoStorage": "MyPhotoStorage",
     "MyPhotoStorage Login": "MyPhotoStorage Login",
     "MyPhotoStorage Registration": "MyPhotoStorage Registration",
     "Password": "Password",
