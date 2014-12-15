@@ -25,56 +25,52 @@
  */
 
 /**
- * Handles user registration and show a form for that
+ * Handles password reset and show a form for that
  */
 
 require_once '../code/App.php';
 
-$redirecturl = filter_input(INPUT_GET, 'redirecturl') ?: '../photos/list.php';
-$username = filter_input(INPUT_POST, 'username');
-$email = filter_input(INPUT_POST, 'email');
+$key = filter_input(INPUT_GET, 'key');
 $password = filter_input(INPUT_POST, 'password');
 $password2 = filter_input(INPUT_POST, 'password2');
 $error = false;
+$passwordwasreset = false;
 
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-    $error = Account::register($username, $email, $password, $password2);
-    if (!$error) {
-		$error = Account::login($username, $password);
-	    if (!$error) {
-			// Redirect the user to his photolist or to the redirecturl
-			header('Location: '.$redirecturl);
-			exit;
-		}
-    }
+	$error = Account::resetPassword($key, $password, $password2);
+	if (!$error) {
+		$passwordwasreset = true;
+	}
 }
 
 ?><!DOCTYPE html>
 <html>
     <head>
-        <title><?php echo __('Account registration') ?></title>
+        <title><?php echo __('Reset password') ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
         <link rel="stylesheet" href="../static/css/default.css" />
     </head>
     <body>
-        <form method="post" class="simple register">
-            <h1><?php echo __('Register a new account') ?></h1>
-            <div>
-                <?php if ($error) : ?>
-                <p class="notification error"><?php echo $error ?></p>
-                <?php endif ?>
-                <label><?php echo __('Username') ?></label>
-                <input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" />
-                <label><?php echo __('Email address') ?></label>
-                <input type="email" name="email" value="<?php echo $email ?>" />
-                <label><?php echo __('Password') ?></label>
-                <input type="password" name="password" value="<?php echo $password ?>" />
-                <label><?php echo __('Repeat password') ?></label>
-                <input type="password" name="password2" value="<?php echo $password2 ?>" />
-                <input type="submit" value="<?php echo __('Create account') ?>" />
-            </div>
+		<form method="post" class="simple resetpassword">
+			<h1><?php echo __('Reset password') ?></h1>
+			<div>
+				<?php if ($passwordwasreset) : ?>
+				<p class="notification success"><?php echo __('Your password was reset. You can now login with your username and your new password.') ?></p>
+				<?php else : ?>
+				<?php   if ($error) : ?>
+				<p class="notification error"><?php echo $error ?></p>
+				<?php   endif ?>
+				<p><?php echo __('Please type your new password into the fields below.') ?></p>
+				<label><?php echo __('Password') ?></label>
+				<input type="password" name="password" />
+				<label><?php echo __('Repeat password') ?></label>
+				<input type="password" name="password2" />
+				<input type="submit" value="<?php echo __('Send') ?>" />
+				<?php endif ?>
+			</div>
             <div><a href="login.php"><?php echo __('Login') ?></a></div>
-        </form>
+			<div><a href="register.php"><?php echo __('Register a new account') ?></a></div>
+		</form>
     </body>
 </html>

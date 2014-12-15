@@ -118,44 +118,53 @@ class Account {
 		Persistence::query($insertquery);
 		return false;
 	}
-        
-    /**
-     * Returns an user identified by his email. Can be false when no user
-     * with the given email exists.
-     * 
-     * @param string $email Email of the user to get
-     */
-    static function getUserByEmail($email) {
+	
+	/**
+	 * Constructs and returns a password reset link for the user identified by
+	 * the given email address. Returns false when there is no user with that
+	 * email address.
+	 * 
+	 * @param string $email Email address of the user
+	 * @return string Password reset link or false.
+	 */
+	static function getPasswordResetLink($email) {
         $escapedemail = Persistence::escape($email);
         $userquery = sprintf('select users_id, users_username, users_password from users where users_email=\'%s\'', $escapedemail);
         $users = Persistence::query($userquery);
         if (count($users) < 1) {
             return false;
         }
-        return $users[0];
-    }
-    
-    /**
-     * Returns a list of all users, unordered.
-     * Used for validating password reset link.
-     * 
-     * @return array List of all users
-     */
-    static function getAllUsers() {
-        return Persistence::query('select * from users');
-    }
-    
-    /**
-     * Sets the password for an user. Used by password reset form.
-     * 
-     * @param string $userid Id of the user to set the password for
-     * @param string $password Password to set
-     */
-    static function setUserPassword($userid, $password) {
-        $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
-        $data = [
-            'users_password' => Persistence::escape($hashedpassword)
-        ];
-        Persistence::update('users', $data, $userid);
-    }
+		$url = filter_input(INPUT_SERVER, 'REQUEST_SCHEME').'://'.filter_input(INPUT_SERVER, 'HTTP_HOST').filter_input(INPUT_SERVER, 'REQUEST_URI');
+		$passwordhash = password_hash($users[0]['users_username'].$users[0]['users_password'], PASSWORD_DEFAULT);
+		$passwordforgetlink = substr($url, 0, strrpos($url, '/') + 1).'resetpassword.php?key='.urlencode($passwordhash);
+		return $passwordforgetlink;
+	}
+	
+	/**
+	 * Sets the password of the user with the given key to the new ones.
+	 * Before that the passwords are checked for equality.
+	 * 
+	 * @param string $key Key the user got with the password reset mail
+	 * @param string $password New password
+	 * @param string $password2 New password again
+	 * @return boolean False, when the password was reset, a translated errorstring otherwise
+	 */
+	static function resetPassword($key, $password, $password2) {
+		if ($password !== $password2) {
+			return __('The passwords do not match.');
+		} else {
+			$users = Persistence::query('select * from users');
+			for ($i = 0; $i < count($users); $i++) {
+				$user = $users[$i];
+				if (password_verify($user['users_username'].$user['users_password'], $key)) {
+					$hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+					$escapedpassword = Persistence::escape($hashedpassword);
+					$updatequery = sprintf('update users set users_password = \'%s\' where users_id = %s', $escapedpassword, $user['users_id']);
+					Persistence::query($updatequery);
+					return false;
+				}
+			}
+		}
+		return __('The password reset link is not valid.');
+	}
 }

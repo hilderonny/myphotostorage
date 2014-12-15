@@ -25,59 +25,48 @@
  */
 
 /**
- * Handles user login and show a form for that
+ * Handles request new password form
  */
 
 require_once '../code/App.php';
 
-$redirecturl = filter_input(INPUT_GET, 'redirecturl') ?: '../photos/list.php';
-$username = filter_input(INPUT_POST, 'username');
-$password = filter_input(INPUT_POST, 'password');
-$error = false;
+$email = filter_input(INPUT_POST, 'email');
+$forgotpasswordsent = false;
 
 if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-	$error = Account::login($username, $password);
-	if (!$error) {
-		// Redirect the user to his photolist or to the redirecturl
-		header('Location: '.$redirecturl);
-		exit;
+	$email = filter_input(INPUT_POST, 'email');
+	$passwordresetlink = Account::getPasswordResetLink($email);
+	if ($passwordresetlink) {
+		// Store the link in the global variable so the template file can access it
+		$GLOBALS['passwordforgetlink'] = $passwordresetlink;
+		ob_start();
+		Templates::includeTemplate('ForgotPasswordEmail');
+		$content = ob_get_clean();
+		mail($email, __('Request for password reset'), $content);
 	}
-} else {
-	// First try automatic login
-	$cookieusername = filter_input(INPUT_COOKIE, 'username');
-	$cookiesecret = filter_input(INPUT_COOKIE, 'secret');
-	if ($cookieusername !== null && $cookiesecret !== null) {
-		$error = Account::login($cookieusername, $cookiesecret, true);
-		if (!$error) {
-			// Redirect the user to his photolist
-			header('Location: '.$redirecturl);
-			exit;
-		}
-	}
+	$forgotpasswordsent = true;
 }
-
 ?><!DOCTYPE html>
 <html>
     <head>
-        <title><?php echo __('MyPhotoStorage Login') ?></title>
+        <title><?php echo __('Request password reset') ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
         <link rel="stylesheet" href="../static/css/default.css" />
     </head>
     <body>
-		<form method="post" class="simple login">
-			<h1><?php echo __('MyPhotoStorage Login') ?></h1>
+		<form method="post" class="simple forgotpassword">
+			<h1><?php echo __('Request password reset') ?></h1>
 			<div>
-				<?php if ($error) : ?>
-				<p class="notification error"><?php echo $error ?></p>
+				<?php if ($forgotpasswordsent) : ?>
+				<p class="notification success"><?php echo __('A password reset link was sent to the email address you typed in. Please check your inbox for further instructions.') ?></p>
 				<?php endif ?>
-				<label><?php echo __('Username') ?></label>
-				<input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" />
-				<label><?php echo __('Password') ?></label>
-				<input type="password" name="password" />
-				<input type="submit" value="<?php echo __('Login') ?>" />
+				<p><?php echo __('Please type your email address into the field below and click on "Send" to get a password reset mail.') ?></p>
+				<label><?php echo __('Email address') ?></label>
+				<input type="email" name="email" />
+				<input type="submit" value="<?php echo __('Send') ?>" />
 			</div>
-			<div><a href="forgotpassword.php"><?php echo __('Forgot password?') ?></a></div>
+			<div><a href="login.php"><?php echo __('Login') ?></a></div>
 			<div><a href="register.php"><?php echo __('Register a new account') ?></a></div>
 		</form>
     </body>
