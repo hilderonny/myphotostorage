@@ -26,10 +26,11 @@
 
 /**
  * Handles login, logout, registration and password forgetting of users.
+ * Also manages user accounts.
  *
  * @author Ronny Hildebrandt <ronny.hildebrandt@avorium.de>
  */
-class Authentication {
+class Account {
 	
 	/**
 	 * Logs the given user into the system and sets the session cookies.
@@ -99,7 +100,7 @@ class Authentication {
 	 */
 	static function register($username, $email, $password, $password2) {
 		if (empty($username) || empty($email) || empty($password)) {
-			return __('Username, email address and password cannot be empty.');
+			return __('Username, email address or password cannot be empty.');
 		}
 		if ($password !== $password2) {
 			return __('The passwords do not match.');
@@ -112,13 +113,10 @@ class Authentication {
 			return __('The username or email address is already in use. Please choose other ones.');
 		}
 		$hashedpassword = password_hash($password, PASSWORD_DEFAULT);
-		$data = [
-			'users_username' => $escapedusername,
-			'users_email' => $escapedemail,
-			'users_password' => Persistence::escape($hashedpassword)
-		];
-		Persistence::insert('users', $data);
-		return self::login($username, $password);
+		$escapedpassword = Persistence::escape($hashedpassword);
+		$insertquery = sprintf('insert into users (users_username, users_email, users_password) values(\'%s\',\'%s\',\'%s\')', $escapedusername, $escapedemail, $escapedpassword);
+		Persistence::query($insertquery);
+		return false;
 	}
         
     /**

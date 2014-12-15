@@ -31,9 +31,9 @@ html { font-family:sans-serif;background-color:#222; }
 body { background-color: #fff;width: 500px;margin: 20px auto;padding:0;border:1px solid #000; }
 
 h1 { background-color:#333;color:#ddd;margin:0;padding:10px;border-bottom:1px solid #000; }
-h2 { color:#333;margin:10px; }
+h2 { color:#333;margin:10px 10px 0 10px; }
 
-div { margin:10px; }
+div { padding:10px; }
 p { margin: 5px 0; }
 label { display: inline-block;width:150px;color:#888;font-size:0.9em; }
 input[type="text"] { display:inline-block;padding:3px; width:320px;margin:5px 0; }
@@ -41,3 +41,12 @@ input[type="submit"] { padding:3px 10px;margin:5px 0 5px 154px; }
 
 p.error { color:#800; background: url(../img/error.png) no-repeat;padding-left: 18px; }
 p.success { color:#080; background: url(../img/success.png) no-repeat;padding-left: 18px; }
+
+@media (max-width:480px) {
+	body { width:100%;margin:0;border:none; }
+	h1 { font-size:24px; }
+	h2 { font-size:18px; }
+	label { display:block;font-size:12px;margin-top:10px; }
+	input[type="text"] { display:block;padding:3px;margin:5px 0;width:100%;font-size:14px; }
+	input[type="submit"] { padding:5px 15px;margin:10px 0;font-size:18px; }
+}

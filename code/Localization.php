@@ -80,10 +80,10 @@ class Localization {
             $prefferedlanguage = self::getPreferredVisitorLanguage();
             // Get translations or load them
             if (!self::$translations) {
-                    $languagetousefilename = 'locale/'.$prefferedlanguage.'.json';
+                    $languagetousefilename = dirname(__DIR__).'/locale/'.$prefferedlanguage.'.json';
                     if (!file_exists($languagetousefilename)) {
                             $defaultlanguage = $GLOBALS['defaultlanguage'] ?: 'en';
-                            $defaultlanguagefilename = 'locale/'.$defaultlanguage.'.json';
+                            $defaultlanguagefilename = dirname(__DIR__).'/locale/'.$defaultlanguage.'.json';
                             if ($prefferedlanguage === $defaultlanguage || !file_exists($defaultlanguagefilename)) {
                                     file_put_contents($languagetousefilename, json_encode([], JSON_PRETTY_PRINT), LOCK_EX);
                             } else {
@@ -94,7 +94,7 @@ class Localization {
             }
             // Check whether a translation exists
             if (!array_key_exists($str, self::$translations)) {
-                    $languagetousefilename = 'locale/'.$prefferedlanguage.'.json';
+                    $languagetousefilename = dirname(__DIR__).'/locale/'.$prefferedlanguage.'.json';
                     self::$translations[$str] = $str;
                     ksort(self::$translations);
                     file_put_contents($languagetousefilename, json_encode(self::$translations, JSON_PRETTY_PRINT), LOCK_EX);

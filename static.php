@@ -29,7 +29,7 @@
  * In these files all markers with ++##TEXT##-- will be translated.
  */
 
-require_once './include/helper.inc.php';
+require_once './code/App.php';
 
 // Construct the absolute file path
 $staticfilename = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT').filter_input(INPUT_SERVER, 'REQUEST_URI');

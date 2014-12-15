@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2014 Ronny Hildebrandt <ronny.hildebrandt@avorium.de>.
@@ -24,10 +24,17 @@
  * THE SOFTWARE.
  */
 
+
 /**
  * This file contains helper functions which make the developers life easier.
- * It also starts or resumes the session.
+ * It also starts or resumes the session. TRhis file must be included in every
+ * page.
+ * This file also includes the localconfig.inc.php file.
  */
+
+// Set the include path to the base directory of the installation
+set_include_path(get_include_path().PATH_SEPARATOR .dirname(__DIR__));
+require_once 'config/localconfig.inc.php';
 
 /**
  * Translates the given string into the language currently used by the visitor.

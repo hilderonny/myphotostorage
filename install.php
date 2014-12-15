@@ -29,7 +29,7 @@
  * after a successfull installation.
  */
 
-require_once './include/helper.inc.php';
+require_once './code/App.php';
 
 // Check file permissions
 $candeleteinstallsript = Install::canDeleteInstallScript();
@@ -60,7 +60,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		$installationprogress = Install::createLocalConfig();
 		// Perform the database installation
 		$installationprogress .= Install::createAndUpdateTables($tableprefix);
-		$installationprogress .= '<p class="success">'.sprintf(__('The installation is completed. You should now delete the $s file for security reasons.'), 'install.php').'</p>';
+		$installationprogress .= '<p class="success">'.sprintf(__('The installation is completed. You should now delete the %s file for security reasons.'), 'install.php').'</p>';
 	} else {
 		$installationprogress = false;
 	}
@@ -80,6 +80,8 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 <html>
 	<head>
 		<title><?php echo __('Install MyPhotoStorage') ?></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
 		<link rel="stylesheet" href="static/css/install.css" />
 	</head>
 	<body>
@@ -144,6 +146,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 			<div>
 				<?php echo $installationprogress ?>
 			</div>
+			<div><a href="account/register.php"><?php echo __('Register a new account') ?></a></div>
 			<?php endif ?>
 		</form>
 	</body>

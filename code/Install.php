@@ -115,8 +115,7 @@ class Install {
 		// pg_connect produces a warning which is okay here. So we
 		// prevent PHP from writing out the warning in this case
 		set_error_handler(function() { /* ignore errors */ });
-		Persistence::init();
-		$connectionexists = Persistence::$connection !== false;
+		$connectionexists = Persistence::getConnection() !== false;
 		restore_error_handler();
 		return $connectionexists;
 	}
@@ -134,7 +133,7 @@ class Install {
 			.'$GLOBALS[\'tableprefix\'] = \''.$GLOBALS['tableprefix'].'\';'."\n"
 			.'$GLOBALS[\'defaultlanguage\'] = \''.$GLOBALS['defaultlanguage'].'\';'."\n";
 		file_put_contents(self::$localConfigFileName, $content, LOCK_EX);
-		return '<p>'.sprintf(__('Created localconfig.inc.php with content "%s".'), htmlentities($content)).'</p>';
+		return '<p>'.sprintf(__('Created localconfig.inc.php with content <pre>%s</pre>'), htmlentities($content)).'</p>';
 	}
 	
 	/**

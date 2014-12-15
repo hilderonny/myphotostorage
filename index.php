@@ -35,9 +35,12 @@
  */
 
 require_once './config/localconfig.inc.php';
-require_once './include/helper.inc.php';
 
 $action = filter_input(INPUT_GET, 'action');
+switch ($action) {
+	case 'register': Account::handleRegister(); break;
+	case 'register': Account::handleRegister(); break;
+}
 if ($action === 'register') { // Register
 	if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		$username = filter_input(INPUT_POST, 'username');

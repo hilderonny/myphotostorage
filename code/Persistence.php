@@ -35,21 +35,23 @@ class Persistence {
 	 * @var resource Connection to PostgreSQL database. Initialized when the
 	 * first call to any function is done.
 	 */
-	static $connection;
+	private static $connection;
 	
 	/**
-	 * Initializes the connection from the settings of the localconfig.inc.php.
+	 * Returns or initializes the connection from the settings of the localconfig.inc.php.
 	 * This file must be included before accessing the persistence framework.
+	 * 
+	 * @return coonnection Returns the inisitalized database connection.
 	 */
-	static function init() {
-		if (self::$connection) {
-			return;
+	static function getConnection() {
+		if (!self::$connection) {
+			$databasehost = $GLOBALS['databasehost'];
+			$databaseusername = $GLOBALS['databaseusername'];
+			$databasepassword = $GLOBALS['databasepassword'];
+			$databasename = $GLOBALS['databasename'];
+			self::$connection = pg_pconnect("host=$databasehost dbname=$databasename user=$databaseusername password=$databasepassword");
 		}
-		$databasehost = $GLOBALS['databasehost'];
-		$databaseusername = $GLOBALS['databaseusername'];
-		$databasepassword = $GLOBALS['databasepassword'];
-		$databasename = $GLOBALS['databasename'];
-		self::$connection = pg_pconnect("host=$databasehost dbname=$databasename user=$databaseusername password=$databasepassword");
+		return self::$connection;
 	}
 
 	/**
@@ -60,7 +62,6 @@ class Persistence {
 	 * and the values to insert as values. All Values must be strings.
 	 */
 	static function insert($tablename, $data) {
-		self::init();
 		$tableprefix = $GLOBALS['tableprefix'];
 		$values = array_values($data);
 		$escapedvalues = [];
@@ -81,7 +82,6 @@ class Persistence {
 	 * @param string $id Id of the record to update
 	 */
 	static function update($tablename, $data, $id) {
-		self::init();
 		$tableprefix = $GLOBALS['tableprefix'];
 		$setvalues = [];
 		foreach ($data as $key => $value) {
@@ -135,11 +135,10 @@ class Persistence {
 	 * 
 	 * @param string $query Query to perform
 	 * @return array Array of rows of the result or nothing when the  query has no result.
-	 * @throws Exception Qhen the query contains an error.
+	 * @throws Exception When the query contains an error.
 	 */
 	static function query($query) {
-		self::init();
-		$result = pg_query(self::$connection, $query);
+		$result = pg_query(self::getConnection(), $query);
 		if ($result) {
 			if ($result !== TRUE) {
 				$array = [];
@@ -160,7 +159,6 @@ class Persistence {
 	 * @return string Escaped value
 	 */
 	static function escape($value) {
-		self::init();
-		return pg_escape_string(self::$connection, $value);
+		return pg_escape_string(self::getConnection(), $value);
 	}
 }
