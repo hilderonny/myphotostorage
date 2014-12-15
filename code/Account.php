@@ -134,9 +134,8 @@ class Account {
         if (count($users) < 1) {
             return false;
         }
-		$url = filter_input(INPUT_SERVER, 'REQUEST_SCHEME').'://'.filter_input(INPUT_SERVER, 'HTTP_HOST').filter_input(INPUT_SERVER, 'REQUEST_URI');
 		$passwordhash = password_hash($users[0]['users_username'].$users[0]['users_password'], PASSWORD_DEFAULT);
-		$passwordforgetlink = substr($url, 0, strrpos($url, '/') + 1).'resetpassword.php?key='.urlencode($passwordhash);
+		$passwordforgetlink = App::getUrl('account/resetpassword.php?key='.urlencode($passwordhash));
 		return $passwordforgetlink;
 	}
 	
@@ -166,5 +165,17 @@ class Account {
 			}
 		}
 		return __('The password reset link is not valid.');
+	}
+	
+	/**
+	 * Is called from every page which requires a logged in user
+	 * and redirects to the login form when no user was logged in.
+	 * The login form gets a redirect URL to the calling page.
+	 */
+	static function requireValidUser() {
+		if (!isset($_SESSION['userid'])) {
+			Account::logout();
+			header('Location: '.App::getUrl('index.php'));
+		}
 	}
 }

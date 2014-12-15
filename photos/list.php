@@ -24,11 +24,13 @@
  * THE SOFTWARE.
  */
 
-require_once '../include/helper.inc.php'; // TODO: Switch to authenticatedhelper.inc.php
+require_once '../code/App.php';
+// Require valid logged in user
+Account::requireValidUser();
 
 ?><!DOCTYPE html>
 <html>
 	<body>
-		<a href="../?action=logout">Logout</a>
+		<a href="../account/logout.php">Logout</a>
 	</body>
 </html>

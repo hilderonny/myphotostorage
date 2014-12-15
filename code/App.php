@@ -59,3 +59,31 @@ spl_autoload_register(function ($class) {
 });
 
 session_start();
+
+/**
+ * Class with some base functions
+ */
+class App {
+	
+	private static $baseurl;
+	
+	/**
+	 * Returns the base URL of the application with trailing slash.
+	 */
+	static function getBaseUrl() {
+		if (!self::$baseurl) {
+			$relativebaseurl = substr(dirname(dirname(__FILE__)), strlen(filter_input(INPUT_SERVER, 'DOCUMENT_ROOT')));
+			self::$baseurl = filter_input(INPUT_SERVER, 'REQUEST_SCHEME').'://'.filter_input(INPUT_SERVER, 'HTTP_HOST').$relativebaseurl.'/';
+		}
+		return self::$baseurl;
+	}
+	
+	/**
+	 * For the given relative URL a full URL string is returned.
+	 * @param string $relativefrombase Relative URL withour leading slash
+	 * @return string Full URL
+	 */
+	static function getUrl($relativefrombase) {
+		return self::getBaseUrl().$relativefrombase;
+	}
+}
