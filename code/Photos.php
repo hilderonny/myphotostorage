@@ -39,7 +39,11 @@ class Photos {
 	 */
 	static function getPhotoListJson($userid) {
 		$medias = Persistence::query('select media_id from media where media_owner_users_id = '.$userid);
-		return json_encode($medias);
+		$ids = [];
+		for ($i = 0; $i < count($medias); $i++) {
+			$ids[] = $medias[$i]["media_id"];
+		}
+		return json_encode($ids);
 	}
 	
 	/**
@@ -70,5 +74,15 @@ class Photos {
 			return null;
 		}
 		return $photos[0];
+	}
+	
+	static function uploadPhoto($file, $userid) {
+		if ($file['type'] !== 'image/jpeg') {
+			return;
+		}
+		$query = 'insert into media (media_owner_users_id, media_mimetype) values ('.$userid.', \''.$file['type'].'\') returning media_id;';
+		$result = Persistence::query($query);
+		$id = $result[0]['media_id'];
+		rename($file['tmp_name'], dirname(__DIR__).'/data/media/'.$id);
 	}
 }

@@ -54,7 +54,7 @@ class Account {
 		if ($passwordishashed) {
 			// The hashed password coming from the cookies is a hash of the username plus the hashed password
 			// I think this could be secure enough, isn't it?
-			if (password_verify($username.$user['users_password'], $password)) {
+			if (!password_verify($username.$user['users_password'], $password)) {
 				sleep(2); // Against brute force attacks
 				self::logout();
 				return __('Username or password incorrect.');
@@ -175,7 +175,7 @@ class Account {
 	static function requireValidUser() {
 		if (!isset($_SESSION['userid'])) {
 			Account::logout();
-			header('Location: '.App::getUrl('index.php'));
+			header('Location: '.App::getUrl('account/login.php?redirecturl='.urlencode(filter_input(INPUT_SERVER, 'REQUEST_URI'))));
 		}
 	}
 }

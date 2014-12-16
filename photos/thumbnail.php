@@ -42,7 +42,7 @@ if ($photo === null) {
 	header("HTTP/1.0 404 Not Found");
 	exit;
 }
-$thumbnailfile = dirname(__DIR__).'/data/media/'.$id.'.thumb';
+$thumbnailfile = dirname(__DIR__).'/data/media/'.$id;
 header('Content-Type: '.$photo['media_mimetype']);
 header('Content-Length: '.filesize($thumbnailfile));
 $handle = fopen($thumbnailfile, 'rb');

@@ -27,3 +27,24 @@
 /**
  * This file is for uploading photos
  */
+
+require_once '../code/App.php';
+// Require valid logged in user
+Account::requireValidUser();
+
+?><!DOCTYPE html>
+<html>
+    <head>
+        <title><?php echo __('Upload photos') ?></title>
+		<?php Templates::includeTemplate('Head') ?>
+		<script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
+    </head>
+	<body>
+		<?php Templates::includeTemplate('MainMenu') ?>
+		<?php Templates::includeTemplate('PhotoMenu') ?>
+		<div class="photouploadprogress"><div id="AllProgress"></div></div>
+		<div id="UploadStatus"></div>
+		<div class="photouploadprogress"><div id="FileProgress"></div></div>
+		<div class="photouploadbutton"><input type="file" multiple="multiple" accept="image/jpeg" onchange="Photos.processUpload(this, 'AllProgress', 'FileProgress', 'UploadStatus')" /></div>
+	</body>
+</html>

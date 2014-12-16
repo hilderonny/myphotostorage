@@ -69,9 +69,8 @@ Photos = {
 	 * list into.
 	 */
 	getList : function(listNodeId) {
-		var self = this;
 		var listNode = document.getElementById(listNodeId);
-		self.doRequest("getPhotoList", null, function(response) {
+		this.doRequest("getPhotoList", null, function(response) {
 			var photoIdsList = JSON.parse(response);
 			for (var i = 0; i < photoIdsList.length; i++) {
 				var container = document.createElement("div");
@@ -81,5 +80,45 @@ Photos = {
 				listNode.appendChild(container);
 			}
 		}, null, null);
+	},
+	
+	uploadFiles : function(files, index, fileuploadedcallback, fileprogresscallback) {
+		var self = this;
+		if (files.length <= index) {
+			return;
+		}
+		this.doRequest("uploadPhoto", {file : files[index]}, function(response) {
+			fileprogresscallback(100);
+			fileuploadedcallback(index);
+			self.uploadFiles(files, index + 1, fileuploadedcallback, fileprogresscallback);
+		}, function(evt) {
+			if (evt.lengthComputable) {
+				var percentage = Math.round((evt.loaded * 100) / evt.total);
+				fileprogresscallback(percentage);
+			}
+		}, null);
+	},
+	
+	processUpload : function(fileinput, allprogressdomnodeid, fileprogressdomnodeid, statusdomnodeid) {
+		var self = this;
+		var allprogressdomnode = document.getElementById(allprogressdomnodeid);
+		var fileprogressdomnode = document.getElementById(fileprogressdomnodeid);
+		var statusdomnode = document.getElementById(statusdomnodeid);
+		var filecount = fileinput.files.length;
+		var formatstring = "++##Uploading file {0} of {1}##--";
+		allprogressdomnode.style.width = "0%";
+		fileprogressdomnode.style.width = "0%";
+		statusdomnode.innerHTML = formatstring.replace(/\{0\}/g, 1).replace(/\{1\}/g, filecount);
+		self.uploadFiles(fileinput.files, 0, function(index) {
+			var progress = Math.round(((index + 1) * 100) / filecount);
+			if ((index + 1) < filecount) {
+				statusdomnode.innerHTML = formatstring.replace(/\{0\}/g, index + 2).replace(/\{1\}/g, filecount);
+			} else {
+				statusdomnode.innerHTML = "++##Upload complete##--";
+			}
+			allprogressdomnode.style.width = progress + "%";
+		}, function(progress) {
+			fileprogressdomnode.style.width = progress + "%";
+		});
 	}
 };

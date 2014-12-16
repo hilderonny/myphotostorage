@@ -35,4 +35,5 @@ $userid = $_SESSION['userid'];
 
 switch ($action) {
 	case 'getPhotoList': echo Photos::getPhotoListJson($userid); break;
+	case 'uploadPhoto': Photos::uploadPhoto($_FILES['file'], $userid); break;
 }

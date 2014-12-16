@@ -33,14 +33,6 @@ require_once '../code/App.php';
 // Require valid logged in user
 Account::requireValidUser();
 
-/*
- * TODO: Alle Funktionen auf dieser Seite werden per AJAX gemacht. Also,
- * Anzahl Bilder ermitteln, Bilder asynchron laden, etc.
- * Nicht Anzahl Bilder ermitteln, sondern die Bilder in Blöcken zu 50 Bildern
- * laden. Wenn dann in den unteren Bereich gescrollt wird, sodass noch zwei
- * Zeilen verdeckt sind, sollen weitere 50 Bilder nachgeladen werden, usw.
- */
-
 ?><!DOCTYPE html>
 <html>
     <head>
