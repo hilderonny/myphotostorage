@@ -1,0 +1,7 @@
+<div class="MainMenu">
+	<?php if (isset($_SESSION['userid'])) : ?>
+	<a href="<?php echo App::getUrl('account/logout.php') ?>"><?php echo __('Logout') ?></a>
+	<?php else : ?>
+	<a href="<?php echo App::getUrl('account/login.php') ?>"><?php echo __('Login') ?></a>
+	<?php endif ?>
+</div>

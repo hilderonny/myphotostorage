@@ -86,7 +86,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	</head>
 	<body>
 		<h1><?php echo __('Install MyPhotoStorage') ?></h1>
-		<form method="post" action="">
+		<form method="post" class="simple install">
 			<h2><?php echo __('File system check') ?></h2>
 			<div>
 				<?php if ($candeleteinstallsript) : ?>

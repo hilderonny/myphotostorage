@@ -25,37 +25,32 @@
  */
 
 /**
- * This page lists all media of the user in a descending date order.
- * The media files will be loaded on demand when the user scrolls.
+ * This file expects an "id" parameter containing a photo ID and responses
+ * the thumbnail for it in one of the following cases:
+ * - The visitor requesting the thumbnail is logged in and owns the photo
+ * - The photo is contained in an album which is publicly visible (status = "public")
+ * In all other cases an error 404 is returned.
  */
 
 require_once '../code/App.php';
-// Require valid logged in user
-Account::requireValidUser();
 
-/*
- * TODO: Alle Funktionen auf dieser Seite werden per AJAX gemacht. Also,
- * Anzahl Bilder ermitteln, Bilder asynchron laden, etc.
- * Nicht Anzahl Bilder ermitteln, sondern die Bilder in Blöcken zu 50 Bildern
- * laden. Wenn dann in den unteren Bereich gescrollt wird, sodass noch zwei
- * Zeilen verdeckt sind, sollen weitere 50 Bilder nachgeladen werden, usw.
- */
+$id = filter_input(INPUT_GET, 'id');
+$userid = isset($_SESSION['userid']) ? $_SESSION['userid'] : false;
 
-?><!DOCTYPE html>
-<html>
-    <head>
-        <title><?php echo __('All photos') ?></title>
-		<?php Templates::includeTemplate('Head') ?>
-		<script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
-		<script type="text/javascript">
-			window.addEventListener('load', function() {
-				Photos.getList('PhotoList');
-			});
-		</script>
-    </head>
-	<body>
-		<?php Templates::includeTemplate('MainMenu') ?>
-		<?php Templates::includeTemplate('PhotoMenu') ?>
-		<div id="PhotoList" class="photolist"></div>
-	</body>
-</html>
+$photo = Photos::getPhoto($id, $userid);
+if ($photo === null) {
+	header("HTTP/1.0 404 Not Found");
+	exit;
+}
+$thumbnailfile = dirname(__DIR__).'/data/media/'.$id.'.thumb';
+header('Content-Type: '.$photo['media_mimetype']);
+header('Content-Length: '.filesize($thumbnailfile));
+$handle = fopen($thumbnailfile, 'rb');
+if ($handle) {
+	while (!feof($handle)) {
+		echo fread($handle, 8192);
+		ob_flush();
+		flush();
+	}
+	fclose($handle);
+}
