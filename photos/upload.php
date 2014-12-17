@@ -32,6 +32,11 @@ require_once '../code/App.php';
 // Require valid logged in user
 Account::requireValidUser();
 
+
+/**
+ * TODO: Link hinzufügen, mit dem man die hochgeladenen Bilder gleich in ein Album packen kann.
+ */
+
 ?><!DOCTYPE html>
 <html>
     <head>

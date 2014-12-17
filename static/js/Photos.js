@@ -34,19 +34,15 @@ Photos = {
 	 * @param {array} postdata Associative array of post data to send to the server. Provide null if not used.
 	 * @param {function} completecallback Callback which is called, when the request is completed. Contains the response of the request.
 	 * @param {function} progresscallback Callback for file uploads which is called multiply with upload progress information. Provide null if not used.
-	 * @param {function} loadcallback Callback for file uploads which is called, when the upload is done. Provide null if not used.
 	 */
-	doRequest : function(action, postdata, completecallback, progresscallback, loadcallback) {
+	doRequest : function(action, postdata, completecallback, progresscallback) {
 		var xhr = new XMLHttpRequest();
 		var formdata = new FormData();
 		xhr.open("POST", "ajax.php", true);
-		if (progresscallback !== null) {
+		if (typeof progresscallback === 'function') {
 			xhr.upload.addEventListener("progress", progresscallback, false);
 		}
-		if (loadcallback !== null) {
-			xhr.upload.addEventListener("load", loadcallback, false);
-		}
-		if (completecallback !== null) {
+		if (typeof completecallback === 'function') {
 			xhr.onreadystatechange = function() {
 				if (xhr.readyState === 4 && xhr.status === 200) {
 					completecallback(xhr.responseText);
@@ -69,17 +65,23 @@ Photos = {
 	 * list into.
 	 */
 	getList : function(listNodeId) {
+		var self = this;
 		var listNode = document.getElementById(listNodeId);
 		this.doRequest("getPhotoList", null, function(response) {
 			var photoIdsList = JSON.parse(response);
 			for (var i = 0; i < photoIdsList.length; i++) {
 				var container = document.createElement("div");
 				var image = document.createElement("img");
-				image.src = "thumbnail.php?id=" + photoIdsList[i];
+				// TODO: Löschen-Funktion nur temporär
+				image.photoId = photoIdsList[i];
+				image.addEventListener("click", function() {
+					window.open("images.php?type=preview&id=" + this.photoId);
+				});
+				image.src = "images.php?type=thumb&id=" + photoIdsList[i];
 				container.appendChild(image);
 				listNode.appendChild(container);
 			}
-		}, null, null);
+		});
 	},
 	
 	uploadFiles : function(files, index, fileuploadedcallback, fileprogresscallback) {
@@ -87,7 +89,7 @@ Photos = {
 		if (files.length <= index) {
 			return;
 		}
-		this.doRequest("uploadPhoto", {file : files[index]}, function(response) {
+		this.doRequest("uploadPhoto", {file : files[index]}, function() {
 			fileprogresscallback(100);
 			fileuploadedcallback(index);
 			self.uploadFiles(files, index + 1, fileuploadedcallback, fileprogresscallback);
@@ -96,7 +98,7 @@ Photos = {
 				var percentage = Math.round((evt.loaded * 100) / evt.total);
 				fileprogresscallback(percentage);
 			}
-		}, null);
+		});
 	},
 	
 	processUpload : function(fileinput, allprogressdomnodeid, fileprogressdomnodeid, statusdomnodeid) {

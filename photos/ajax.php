@@ -34,6 +34,6 @@ $action = filter_input(INPUT_POST, 'action');
 $userid = $_SESSION['userid'];
 
 switch ($action) {
-	case 'getPhotoList': echo Photos::getPhotoListJson($userid); break;
+	case 'getPhotoList': echo Photos::getPhotoList($userid); break;
 	case 'uploadPhoto': Photos::uploadPhoto($_FILES['file'], $userid); break;
 }

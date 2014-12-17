@@ -35,6 +35,7 @@
 require_once '../code/App.php';
 
 $id = filter_input(INPUT_GET, 'id');
+$type = filter_input(INPUT_GET, 'type');
 $userid = isset($_SESSION['userid']) ? $_SESSION['userid'] : false;
 
 $photo = Photos::getPhoto($id, $userid);
@@ -42,7 +43,7 @@ if ($photo === null) {
 	header("HTTP/1.0 404 Not Found");
 	exit;
 }
-$thumbnailfile = dirname(__DIR__).'/data/media/'.$id;
+$thumbnailfile = Photos::getMediaDir().$id.'.'.$type;
 header('Content-Type: '.$photo['media_mimetype']);
 header('Content-Length: '.filesize($thumbnailfile));
 $handle = fopen($thumbnailfile, 'rb');

@@ -29,6 +29,10 @@ THE SOFTWARE.
 * { margin:0;padding:0;box-sizing: border-box; }
 html { font-family:sans-serif;background-color:#222; }
 
+div.photolist > div { float:left; }
+div.photolist > div > img { display: block; }
+div.photolist:after { content:''; clear:both; }
+
 div.photouploadprogress { border:1px solid #000; background-color:#ccc;border-radius: 5px; }
 div.photouploadprogress > div { height:10px;width:0;background-color:#0c0;border-radius: 5px; }
 

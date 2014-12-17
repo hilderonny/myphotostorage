@@ -106,6 +106,15 @@ class Install {
 	}
 	
 	/**
+	 * Testst whether the PHP GD extension is available.
+	 * 
+	 * @return boolean True when the PHP GD extension is loaded.
+	 */
+	static function isGdAvailable() {
+		return extension_loaded('gd');
+	}
+	
+	/**
 	 * Tests whether the system can access the database and returns 
 	 * true on success.
 	 * 
@@ -166,10 +175,9 @@ class Install {
 	static function createAndUpdateTables() {
 		$result = '';
 		$result .= self::createAndUpdateTable('users', ['users_username' => 'text', 'users_password' => 'text', 'users_email' => 'text']);
-		$result .= self::createAndUpdateTable('media', ['media_filename' => 'text', 'media_mimetype' => 'text', 'media_location' => 'text', 'media_owner_users_id' => 'bigint references users(users_id) on delete cascade', 'media_status' => 'text']);
+		$result .= self::createAndUpdateTable('media', ['media_mimetype' => 'text', 'media_location' => 'text', 'media_owner_users_id' => 'bigint references users(users_id) on delete cascade', 'media_date' => 'bigint']);
 		$result .= self::createAndUpdateTable('albums', ['albums_owner_users_id' => 'bigint references users(users_id) on delete cascade', 'albums_name' => 'text', 'albums_status' => 'text']);
 		$result .= self::createAndUpdateTable('albummedia', ['albummedia_albums_id' => 'bigint references albums(albums_id) on delete cascade', 'albummedia_media_id' => 'bigint references media(media_id) on delete cascade']);
-		$result .= self::createAndUpdateTable('mediacrons', ['mediacrons_media_id' => 'bigint references media(media_id) on delete cascade', 'mediacrons_action' => 'text']);
 		return $result;
 	}
 }
