@@ -25,8 +25,7 @@
  */
 
 /**
- * This file is used for installation and gets renamed to install.php.old 
- * after a successfull installation.
+ * This file is used for installation.
  */
 
 require_once './code/App.php';
@@ -36,7 +35,7 @@ $candeleteinstallsript = Install::canDeleteInstallScript();
 $canwritelocalconfig = Install::canWriteLocalConfig();
 $canwritemediadir = Install::canWriteMediaDir();
 $canwritelocaledir = Install::canWriteLocaleDir();
-$ispostgresavailable = Install::isPostgresAvailable();
+$isdatabaseavailable = Install::isPostgresAvailable();
 $isgdavailable = Install::isGdAvailable();
 
 // Handle postbacks for form
@@ -56,7 +55,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	$GLOBALS['defaultlanguage'] = $defaultlanguage;
 	// Check database connection
 	$databaseerror = !Install::canAccessDatabase();
-	if ($candeleteinstallsript && $canwritelocalconfig && $canwritemediadir && $canwritelocaledir && $ispostgresavailable && $isgdavailable && !$databaseerror) {
+	if ($candeleteinstallsript && $canwritelocalconfig && $canwritemediadir && $canwritelocaledir && $isdatabaseavailable && $isgdavailable && !$databaseerror) {
 		// Store localconfig file
 		$installationprogress = Install::createLocalConfig();
 		// Perform the database installation
@@ -112,19 +111,21 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 				<?php endif ?>
 			</div>
 			<h2><?php echo __('PHP modules') ?></h2>
-				<?php if ($ispostgresavailable) : ?>
-				<p class="success"><?php echo __('PostgreSQL is available.') ?></p>
+			<div>
+				<?php if ($isdatabaseavailable) : ?>
+				<p class="success"><?php echo __('Database is available.') ?></p>
 				<?php else : ?>
-				<p class="error"><?php echo __('The PostgreSQL PHP extension is not available. Please install it. On Debian you can use "sudo apt-get install php5-pgsql"') ?></p>
+				<p class="error"><?php echo __('The Database PHP extension is not available. Please install it. On Debian you can use "sudo apt-get install php5-mysql"') ?></p>
 				<?php endif ?>
 				<?php if ($isgdavailable) : ?>
 				<p class="success"><?php echo __('GD is available.') ?></p>
 				<?php else : ?>
 				<p class="error"><?php echo __('The GD PHP extension is not available. Please install it. On Debian you can use "sudo apt-get install php5-gd"') ?></p>
 				<?php endif ?>
+			</div>
 			<h2><?php echo __('Database connection') ?></h2>
 			<div>
-				<?php if ($ispostgresavailable) : ?>
+				<?php if ($isdatabaseavailable) : ?>
 				<label><?php echo __('Database host') ?></label>
 				<input type="text" name="databasehost" value="<?php echo $databasehost ?>" />
 				<label><?php echo __('Database username') ?></label>

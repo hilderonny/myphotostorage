@@ -34,6 +34,8 @@
 
 require_once '../code/App.php';
 
+$tableprefix = $GLOBALS['tableprefix'];
+
 $id = filter_input(INPUT_GET, 'id');
 $type = filter_input(INPUT_GET, 'type');
 $userid = isset($_SESSION['userid']) ? $_SESSION['userid'] : false;
@@ -44,7 +46,7 @@ if ($photo === null) {
 	exit;
 }
 $thumbnailfile = Photos::getMediaDir().$id.'.'.$type;
-header('Content-Type: '.$photo['media_mimetype']);
+header('Content-Type: '.$photo[$tableprefix.'media_mimetype']);
 header('Content-Length: '.filesize($thumbnailfile));
 $handle = fopen($thumbnailfile, 'rb');
 if ($handle) {

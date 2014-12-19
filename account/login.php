@@ -70,9 +70,9 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 				<p class="notification error"><?php echo $error ?></p>
 				<?php endif ?>
 				<label><?php echo __('Username') ?></label>
-				<input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" />
+				<input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" maxlength="100" />
 				<label><?php echo __('Password') ?></label>
-				<input type="password" name="password" />
+				<input type="password" name="password" maxlength="100" />
 				<input type="submit" value="<?php echo __('Login') ?>" />
 			</div>
 			<div><a href="forgotpassword.php"><?php echo __('Forgot password?') ?></a></div>

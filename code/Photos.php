@@ -47,13 +47,14 @@ class Photos {
 	 * @return string JSON array containing the IDs of all photos of the user.
 	 */
 	static function getPhotoList($userid) {
-		$medias = Persistence::query('select media_id, to_char(to_timestamp(media_date), \'YYYY-MM\') as month from media where media_owner_users_id = '.$userid.' order by media_date desc');
+		$tableprefix = $GLOBALS['tableprefix'];
+		$medias = Persistence::query('select '.$tableprefix.'media_id, from_unixtime('.$tableprefix.'media_date, \'%Y-%m\') as month from '.$tableprefix.'media where '.$tableprefix.'media_owner_users_id = '.$userid.' order by '.$tableprefix.'media_date desc');
 		$ids = [];
 		for ($i = 0; $i < count($medias); $i++) {
-			if (!isset($ids[$medias[$i]["month"]])) {
-				$ids[$medias[$i]["month"]] = [];
+			if (!isset($ids[$medias[$i]['month']])) {
+				$ids[$medias[$i]['month']] = [];
 			}
-			$ids[$medias[$i]["month"]][] = $medias[$i]["media_id"];
+			$ids[$medias[$i]['month']][] = $medias[$i][$tableprefix.'media_id'];
 		}
 		return json_encode($ids);
 	}
@@ -70,16 +71,17 @@ class Photos {
 	 * not accessible.
 	 */
 	static function getPhoto($photoId, $userId) {
+		$tableprefix = $GLOBALS['tableprefix'];
 		$query = '
 			select
-				media.*
-			from media
-			left join albummedia on albummedia.albummedia_media_id = media.media_id
-			left join albums on albums.albums_id = albummedia.albummedia_albums_id
-			where media.media_id = '.$photoId.'
+				'.$tableprefix.'media.*
+			from '.$tableprefix.'media
+			left join '.$tableprefix.'albummedia on '.$tableprefix.'albummedia.'.$tableprefix.'albummedia_media_id = '.$tableprefix.'media.'.$tableprefix.'media_id
+			left join '.$tableprefix.'albums on '.$tableprefix.'albums.'.$tableprefix.'albums_id = '.$tableprefix.'albummedia.'.$tableprefix.'albummedia_albums_id
+			where '.$tableprefix.'media.'.$tableprefix.'media_id = '.$photoId.'
 			and (
-				albums.albums_status = \'public\'
-				'.($userId ? 'or media.media_owner_users_id = '.$userId : '').'
+				'.$tableprefix.'albums.'.$tableprefix.'albums_public = 1
+				'.($userId ? 'or '.$tableprefix.'media.'.$tableprefix.'media_owner_users_id = '.$userId : '').'
 			)';
 		$photos = Persistence::query($query);
 		if (count($photos) < 1) {
@@ -151,6 +153,7 @@ class Photos {
 	 * @param int $userid ID of the owner of the uploaded photo
 	 */
 	static function uploadPhoto($file, $userid) {
+		$tableprefix = $GLOBALS['tableprefix'];
 		if ($file['type'] !== 'image/jpeg') {
 			return;
 		}
@@ -163,9 +166,8 @@ class Photos {
 			$datetime = date_timestamp_get(date_create_from_format('Y:m:d H:i:s', $exif['DateTime']));
 		}
 		$location = isset($exif['GPSLatitude']) ? sprintf('%f,%f', self::getGps($exif["GPSLatitude"], $exif['GPSLatitudeRef']), self::getGps($exif["GPSLongitude"], $exif['GPSLongitudeRef'])) : '';
-		$query = 'insert into media (media_owner_users_id, media_mimetype, media_location, media_date) values ('.$userid.', \''.$file['type'].'\', \''.$location.'\', '.$datetime.') returning media_id';
-		$result = Persistence::query($query);
-		$id = $result[0]['media_id'];
+		$query = 'insert into '.$tableprefix.'media ('.$tableprefix.'media_owner_users_id, '.$tableprefix.'media_mimetype, '.$tableprefix.'media_location, '.$tableprefix.'media_date) values ('.$userid.', \''.$file['type'].'\', \''.$location.'\', '.$datetime.')';
+		$id = Persistence::query($query);
 		// Generate list thumbnail
 		self::resizeImage($file['tmp_name'], self::getMediaDir().$id.'.thumb', 320, true);
 		// Generate big preview image for browser view (max. 1024 pixels height)

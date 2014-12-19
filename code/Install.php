@@ -174,10 +174,10 @@ class Install {
 	 */
 	static function createAndUpdateTables() {
 		$result = '';
-		$result .= self::createAndUpdateTable('users', ['users_username' => 'text', 'users_password' => 'text', 'users_email' => 'text']);
-		$result .= self::createAndUpdateTable('media', ['media_mimetype' => 'text', 'media_location' => 'text', 'media_owner_users_id' => 'bigint references users(users_id) on delete cascade', 'media_date' => 'bigint']);
-		$result .= self::createAndUpdateTable('albums', ['albums_owner_users_id' => 'bigint references users(users_id) on delete cascade', 'albums_name' => 'text', 'albums_status' => 'text']);
-		$result .= self::createAndUpdateTable('albummedia', ['albummedia_albums_id' => 'bigint references albums(albums_id) on delete cascade', 'albummedia_media_id' => 'bigint references media(media_id) on delete cascade']);
+		$result .= self::createAndUpdateTable('users', ['users_username' => 'varchar(255)', 'users_password' => 'varchar(255)', 'users_email' => 'varchar(255)']);
+		$result .= self::createAndUpdateTable('media', ['media_mimetype' => 'varchar(50)', 'media_location' => 'varchar(50)', 'media_owner_users_id' => ['bigint unsigned', 'users'], 'media_date' => 'bigint unsigned']);
+		$result .= self::createAndUpdateTable('albums', ['albums_owner_users_id' => ['bigint unsigned', 'users'], 'albums_name' => 'varchar(255)', 'albums_public' => 'tinyint(1)']);
+		$result .= self::createAndUpdateTable('albummedia', ['albummedia_albums_id' => ['bigint unsigned', 'albums'], 'albummedia_media_id' => ['bigint unsigned', 'media']]);
 		return $result;
 	}
 }

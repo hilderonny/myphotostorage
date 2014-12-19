@@ -42,8 +42,9 @@ class Account {
 	 * @return string False on success or an error message
 	 */
 	static function login($username, $password, $passwordishashed = false) {
+		$tableprefix = $GLOBALS['tableprefix'];
 		$escapedusername = Persistence::escape($username);
-		$userquery = sprintf('select users_id, users_username, users_password from users where users_username=\'%s\'', $escapedusername);
+		$userquery = sprintf('select '.$tableprefix.'users_id, '.$tableprefix.'users_username, '.$tableprefix.'users_password from '.$tableprefix.'users where '.$tableprefix.'users_username=\'%s\'', $escapedusername);
 		$users = Persistence::query($userquery);
 		if (count($users) < 1) {
 			sleep(2); // Against brute force attacks
@@ -54,13 +55,13 @@ class Account {
 		if ($passwordishashed) {
 			// The hashed password coming from the cookies is a hash of the username plus the hashed password
 			// I think this could be secure enough, isn't it?
-			if (!password_verify($username.$user['users_password'], $password)) {
+			if (!password_verify($username.$user[$tableprefix.'users_password'], $password)) {
 				sleep(2); // Against brute force attacks
 				self::logout();
 				return __('Username or password incorrect.');
 			}
 		} else {
-			if (!password_verify($password, $user['users_password'])) {
+			if (!password_verify($password, $user[$tableprefix.'users_password'])) {
 				sleep(2); // Against brute force attacks
 				self::logout();
 				return __('Username or password incorrect.');
@@ -69,8 +70,8 @@ class Account {
 		// At this point the authentication is correct, so set the cookies and session variables
 		// Cookie lifetime is 30 days.
 		setcookie('username', $username, time()+60*60*24*30);
-		setcookie('secret', password_hash($username.$user['users_password'], PASSWORD_DEFAULT), time() + 60 * 60 * 24 * 30);
-		$_SESSION['userid'] = $user['users_id'];
+		setcookie('secret', password_hash($username.$user[$tableprefix.'users_password'], PASSWORD_DEFAULT), time() + 60 * 60 * 24 * 30);
+		$_SESSION['userid'] = $user[$tableprefix.'users_id'];
 		return false;
 	}
 	
@@ -99,6 +100,7 @@ class Account {
 	 * @return string False on succes or a translated error message.
 	 */
 	static function register($username, $email, $password, $password2) {
+		$tableprefix = $GLOBALS['tableprefix'];
 		if (empty($username) || empty($email) || empty($password)) {
 			return __('Username, email address or password cannot be empty.');
 		}
@@ -107,14 +109,14 @@ class Account {
 		}
 		$escapedusername = Persistence::escape($username);
 		$escapedemail = Persistence::escape($email);
-		$existingusersquery = sprintf('select users_username from users where users_username=\'%s\' or users_email=\'%s\'', $escapedusername, $escapedemail);
+		$existingusersquery = sprintf('select '.$tableprefix.'users_username from '.$tableprefix.'users where '.$tableprefix.'users_username=\'%s\' or '.$tableprefix.'users_email=\'%s\'', $escapedusername, $escapedemail);
 		$existingusers = Persistence::query($existingusersquery);
 		if (count($existingusers) > 0) {
 			return __('The username or email address is already in use. Please choose other ones.');
 		}
 		$hashedpassword = password_hash($password, PASSWORD_DEFAULT);
 		$escapedpassword = Persistence::escape($hashedpassword);
-		$insertquery = sprintf('insert into users (users_username, users_email, users_password) values(\'%s\',\'%s\',\'%s\')', $escapedusername, $escapedemail, $escapedpassword);
+		$insertquery = sprintf('insert into '.$tableprefix.'users ('.$tableprefix.'users_username, '.$tableprefix.'users_email, '.$tableprefix.'users_password) values(\'%s\',\'%s\',\'%s\')', $escapedusername, $escapedemail, $escapedpassword);
 		Persistence::query($insertquery);
 		return false;
 	}
@@ -128,13 +130,14 @@ class Account {
 	 * @return string Password reset link or false.
 	 */
 	static function getPasswordResetLink($email) {
+		$tableprefix = $GLOBALS['tableprefix'];
         $escapedemail = Persistence::escape($email);
-        $userquery = sprintf('select users_id, users_username, users_password from users where users_email=\'%s\'', $escapedemail);
+        $userquery = sprintf('select '.$tableprefix.'users_id, '.$tableprefix.'users_username, '.$tableprefix.'users_password from '.$tableprefix.'users where '.$tableprefix.'users_email=\'%s\'', $escapedemail);
         $users = Persistence::query($userquery);
         if (count($users) < 1) {
             return false;
         }
-		$passwordhash = password_hash($users[0]['users_username'].$users[0]['users_password'], PASSWORD_DEFAULT);
+		$passwordhash = password_hash($users[0][$tableprefix.'users_username'].$users[0][$tableprefix.'users_password'], PASSWORD_DEFAULT);
 		$passwordforgetlink = App::getUrl('account/resetpassword.php?key='.urlencode($passwordhash));
 		return $passwordforgetlink;
 	}
@@ -149,16 +152,17 @@ class Account {
 	 * @return boolean False, when the password was reset, a translated errorstring otherwise
 	 */
 	static function resetPassword($key, $password, $password2) {
+		$tableprefix = $GLOBALS['tableprefix'];
 		if ($password !== $password2) {
 			return __('The passwords do not match.');
 		} else {
-			$users = Persistence::query('select * from users');
+			$users = Persistence::query('select * from '.$tableprefix.'users');
 			for ($i = 0; $i < count($users); $i++) {
 				$user = $users[$i];
-				if (password_verify($user['users_username'].$user['users_password'], $key)) {
+				if (password_verify($user[$tableprefix.'users_username'].$user[$tableprefix.'users_password'], $key)) {
 					$hashedpassword = password_hash($password, PASSWORD_DEFAULT);
 					$escapedpassword = Persistence::escape($hashedpassword);
-					$updatequery = sprintf('update users set users_password = \'%s\' where users_id = %s', $escapedpassword, $user['users_id']);
+					$updatequery = sprintf('update '.$tableprefix.'users set '.$tableprefix.'users_password = \'%s\' where '.$tableprefix.'users_id = %s', $escapedpassword, $user[$tableprefix.'users_id']);
 					Persistence::query($updatequery);
 					return false;
 				}

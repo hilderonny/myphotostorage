@@ -63,13 +63,13 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
                 <p class="notification error"><?php echo $error ?></p>
                 <?php endif ?>
                 <label><?php echo __('Username') ?></label>
-                <input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" />
+                <input type="text" autocapitalize="off" autocorrect="off" name="username" value="<?php echo $username ?>" maxlength="100" />
                 <label><?php echo __('Email address') ?></label>
-                <input type="email" name="email" value="<?php echo $email ?>" />
+                <input type="email" name="email" value="<?php echo $email ?>" maxlength="100" />
                 <label><?php echo __('Password') ?></label>
-                <input type="password" name="password" value="<?php echo $password ?>" />
+                <input type="password" name="password" value="<?php echo $password ?>" maxlength="100" />
                 <label><?php echo __('Repeat password') ?></label>
-                <input type="password" name="password2" value="<?php echo $password2 ?>" />
+                <input type="password" name="password2" value="<?php echo $password2 ?>" maxlength="100" />
                 <input type="submit" value="<?php echo __('Create account') ?>" />
             </div>
             <div><a href="login.php"><?php echo __('Login') ?></a></div>

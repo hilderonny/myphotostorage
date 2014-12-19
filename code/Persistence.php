@@ -32,7 +32,7 @@
 class Persistence {
 
 	/**
-	 * @var resource Connection to PostgreSQL database. Initialized when the
+	 * @var resource Connection to MySQL database. Initialized when the
 	 * first call to any function is done.
 	 */
 	private static $connection;
@@ -49,46 +49,9 @@ class Persistence {
 			$databaseusername = $GLOBALS['databaseusername'];
 			$databasepassword = $GLOBALS['databasepassword'];
 			$databasename = $GLOBALS['databasename'];
-			self::$connection = pg_pconnect("host=$databasehost dbname=$databasename user=$databaseusername password=$databasepassword");
+			self::$connection = mysqli_connect($databasehost, $databaseusername, $databasepassword, $databasename);
 		}
 		return self::$connection;
-	}
-
-	/**
-	 * Inserts the given data into the given table.
-	 * 
-	 * @param string $tablename Table to insert the data into
-	 * @param array $data Associative array containing the column names as keys
-	 * and the values to insert as values. All Values must be strings.
-	 */
-	static function insert($tablename, $data) {
-		$tableprefix = $GLOBALS['tableprefix'];
-		$values = array_values($data);
-		$escapedvalues = [];
-		foreach ($values as $value) {
-			$escapedvalues[] = self::escape($value);
-		}
-		$query = 'insert into '.$tableprefix.$tablename.' ('.implode(',', array_keys($data)).') values (\''.implode('\',\'', $escapedvalues).'\')';
-		self::query($query);
-	}
-	
-	/**
-	 * Updates the given data in the given table for records with the given
-	 * id.
-	 * 
-	 * @param string $tablename Table to update its data
-	 * @param array $data Associative array containing the column names as keys
-	 * and the values to insert as values. All Values must be strings.
-	 * @param string $id Id of the record to update
-	 */
-	static function update($tablename, $data, $id) {
-		$tableprefix = $GLOBALS['tableprefix'];
-		$setvalues = [];
-		foreach ($data as $key => $value) {
-			$setvalues[] = $key.'=\''.self::escape($value).'\'';
-		}
-		$query = 'update '.$tableprefix.$tablename.' set '.implode(',', $setvalues).' where '.$tableprefix.$tablename.'_id='.$id;
-		self::query($query);
 	}
 	
 	/**
@@ -101,11 +64,11 @@ class Persistence {
 	 */
 	static function createTable($tablename) {
 		$tableprefix = $GLOBALS['tableprefix'];
-		$existingtables = self::query('select table_name from information_schema.tables where table_schema=\'public\' and table_name=\''.$tableprefix.$tablename.'\'');
+		$existingtables = self::query('show tables like \''.$tableprefix.$tablename.'\'');
 		if (count($existingtables) > 0) {
 			return false;
 		}
-		$createquery = 'create table '.$tableprefix.$tablename.' ('.$tablename.'_id bigserial primary key)';
+		$createquery = 'create table '.$tableprefix.$tablename.' ('.$tableprefix.$tablename.'_id bigint unsigned not null auto_increment primary key) engine = INNODB';
 		self::query($createquery);
 		return true;
 	}
@@ -120,11 +83,17 @@ class Persistence {
 	 */
 	static function createColumn($tablename, $columnname, $columndefinition) {
 		$tableprefix = $GLOBALS['tableprefix'];
-		$existingcolumns = self::query('select column_name from information_schema.columns where table_schema=\'public\' and  table_name = \''.$tableprefix.$tablename.'\' and column_name=\''.$columnname.'\'');
+		$existingcolumns = self::query('show columns from '.$tableprefix.$tablename.' like \''.$tableprefix.$columnname.'\'');
 		if (count($existingcolumns) > 0) {
 			return false;
 		}
-		$createquery = 'alter table '.$tableprefix.$tablename.' add column '.$columnname.' '.$columndefinition;
+		if (is_array($columndefinition)) {
+			// When this is an array, we have a reference to another table
+			$sqldefinition = $columndefinition[0].', add foreign key fk_'.$tableprefix.$columnname.'('.$tableprefix.$columnname.') references '.$tableprefix.$columndefinition[1].'('.$tableprefix.$columndefinition[1].'_id) on delete cascade on update cascade';
+		} else {
+			$sqldefinition = $columndefinition;
+		}
+		$createquery = 'alter table '.$tableprefix.$tablename.' add column '.$tableprefix.$columnname.' '.$sqldefinition;
 		self::query($createquery);
 		return true;
 	}
@@ -138,14 +107,17 @@ class Persistence {
 	 * @throws Exception When the query contains an error.
 	 */
 	static function query($query) {
-		$result = pg_query(self::getConnection(), $query);
+		$connection = self::getConnection();
+		$result = $connection->query($query);
 		if ($result) {
 			if ($result !== TRUE) {
 				$array = [];
-				while ($row = pg_fetch_assoc($result)) {
+				while ($row = $result->fetch_assoc()) {
 					$array[] = $row;
 				}
 				return $array;
+			} else if (strtolower(substr($query, 0, 6)) === 'insert') {
+				return $connection->insert_id;
 			}
 		} else {
 			throw new Exception('Error in query: '.$query);
@@ -159,6 +131,6 @@ class Persistence {
 	 * @return string Escaped value
 	 */
 	static function escape($value) {
-		return pg_escape_string(self::getConnection(), $value);
+		return mysqli_real_escape_string(self::getConnection(), $value);
 	}
 }

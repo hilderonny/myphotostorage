@@ -61,9 +61,9 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 				<?php   endif ?>
 				<p><?php echo __('Please type your new password into the fields below.') ?></p>
 				<label><?php echo __('Password') ?></label>
-				<input type="password" name="password" />
+				<input type="password" name="password" maxlength="100" />
 				<label><?php echo __('Repeat password') ?></label>
-				<input type="password" name="password2" />
+				<input type="password" name="password2" maxlength="100" />
 				<input type="submit" value="<?php echo __('Send') ?>" />
 				<?php endif ?>
 			</div>
