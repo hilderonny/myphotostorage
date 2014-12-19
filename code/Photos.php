@@ -47,10 +47,13 @@ class Photos {
 	 * @return string JSON array containing the IDs of all photos of the user.
 	 */
 	static function getPhotoList($userid) {
-		$medias = Persistence::query('select media_id from media where media_owner_users_id = '.$userid.' order by media_date desc');
+		$medias = Persistence::query('select media_id, to_char(to_timestamp(media_date), \'YYYY-MM\') as month from media where media_owner_users_id = '.$userid.' order by media_date desc');
 		$ids = [];
 		for ($i = 0; $i < count($medias); $i++) {
-			$ids[] = $medias[$i]["media_id"];
+			if (!isset($ids[$medias[$i]["month"]])) {
+				$ids[$medias[$i]["month"]] = [];
+			}
+			$ids[$medias[$i]["month"]][] = $medias[$i]["media_id"];
 		}
 		return json_encode($ids);
 	}
@@ -153,7 +156,12 @@ class Photos {
 		}
 		// Extract meta data from JFIF and store it in the database
 		$exif = exif_read_data($file['tmp_name']);
-		$datetime = isset($exif['DateTimeOriginal']) ? date_timestamp_get(date_create_from_format('Y:m:d H:i:s', $exif['DateTimeOriginal'])) : (isset($exif['DateTimeOriginal']) ? date_timestamp_get(date_create_from_format('Y:m:d H:i:s', $exif['DateTime'])) : time());
+		$datetime = time();
+		if (isset($exif['DateTimeOriginal'])) {
+			$datetime = date_timestamp_get(date_create_from_format('Y:m:d H:i:s', $exif['DateTimeOriginal']));
+		} else if (isset($exif['DateTime'])) {
+			$datetime = date_timestamp_get(date_create_from_format('Y:m:d H:i:s', $exif['DateTime']));
+		}
 		$location = isset($exif['GPSLatitude']) ? sprintf('%f,%f', self::getGps($exif["GPSLatitude"], $exif['GPSLatitudeRef']), self::getGps($exif["GPSLongitude"], $exif['GPSLongitudeRef'])) : '';
 		$query = 'insert into media (media_owner_users_id, media_mimetype, media_location, media_date) values ('.$userid.', \''.$file['type'].'\', \''.$location.'\', '.$datetime.') returning media_id';
 		$result = Persistence::query($query);

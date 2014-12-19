@@ -65,21 +65,29 @@ Photos = {
 	 * list into.
 	 */
 	getList : function(listNodeId) {
-		var self = this;
 		var listNode = document.getElementById(listNodeId);
 		this.doRequest("getPhotoList", null, function(response) {
 			var photoIdsList = JSON.parse(response);
-			for (var i = 0; i < photoIdsList.length; i++) {
-				var container = document.createElement("div");
-				var image = document.createElement("img");
-				// TODO: Löschen-Funktion nur temporär
-				image.photoId = photoIdsList[i];
-				image.addEventListener("click", function() {
-					window.open("images.php?type=preview&id=" + this.photoId);
-				});
-				image.src = "images.php?type=thumb&id=" + photoIdsList[i];
-				container.appendChild(image);
-				listNode.appendChild(container);
+			var monthnames = {"01" : "++##January##--", "02" : "++##February##--", "03" : "++##March##--", "04" : "++##April##--", "05" : "++##May##--", "06" : "++##June##--", "07" : "++##July##--", "08" : "++##August##--", "09" : "++##September##--", "10" : "++##October##--", "11" : "++##November##--", "12" : "++##December##--" };
+			for (var yearmonth in photoIdsList) {
+				var monthdiv = document.createElement("div");
+				monthdiv.classList.add("month");
+				listNode.appendChild(monthdiv);
+				yearmontharray = yearmonth.split("-");
+				monthdiv.innerHTML = monthnames[yearmontharray[1]] + ' ' + yearmontharray[0];
+				for (var i = 0; i < photoIdsList[yearmonth].length; i++) {
+					var id = photoIdsList[yearmonth][i];
+					var container = document.createElement("div");
+					var image = document.createElement("img");
+					// TODO: Löschen-Funktion nur temporär
+					image.photoId = id;
+					image.addEventListener("click", function() {
+						window.open("images.php?type=preview&id=" + this.photoId);
+					});
+					image.src = "images.php?type=thumb&id=" + id;
+					container.appendChild(image);
+					listNode.appendChild(container);
+				}
 			}
 		});
 	},
@@ -89,7 +97,7 @@ Photos = {
 		if (files.length <= index) {
 			return;
 		}
-		this.doRequest("uploadPhoto", {file : files[index]}, function() {
+		this.doRequest("uploadPhoto", {file : files[index]}, function(response) {
 			fileprogresscallback(100);
 			fileuploadedcallback(index);
 			self.uploadFiles(files, index + 1, fileuploadedcallback, fileprogresscallback);
@@ -122,5 +130,15 @@ Photos = {
 		}, function(progress) {
 			fileprogressdomnode.style.width = progress + "%";
 		});
+	},
+	
+	zoom : function(value) {
+		var stylesheet = document.styleSheets[0];
+		if (stylesheet.zoomrule) {
+			stylesheet.removeRule(stylesheet.zoomrule);
+		}
+		var lastindex = stylesheet.rules.length;
+		stylesheet.insertRule("div.photolist > div > img { width:" + value + "px;height:" + value + "px; }", lastindex);
+		stylesheet.zoomrule = lastindex;
 	}
 };

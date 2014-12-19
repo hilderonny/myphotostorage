@@ -29,9 +29,11 @@ THE SOFTWARE.
 * { margin:0;padding:0;box-sizing: border-box; }
 html { font-family:sans-serif;background-color:#222; }
 
-div.photolist > div { float:left; }
-div.photolist > div > img { display: block; }
-div.photolist:after { content:''; clear:both; }
+div.photolist { background-color: #777; }
+div.photolist > div { float:left;box-shadow:0px 7px 10px 2px rgba(0,0,0,0.5);margin:15px; }
+div.photolist > div.month { float:none;clear:both;padding:15px 0 10px 0;box-shadow:none;margin:0; }
+div.photolist > div > img { display: block;width:320px;height:320px; }
+div.photolist:after { content:"";display:block;clear:both;height:0; }
 
 div.photouploadprogress { border:1px solid #000; background-color:#ccc;border-radius: 5px; }
 div.photouploadprogress > div { height:10px;width:0;background-color:#0c0;border-radius: 5px; }
@@ -49,12 +51,22 @@ p.error { color:#800; background-color:#fcc;border-color:#800; }
 p.success { color:#080; background-color:#cfc;border-color:#080; }
 p.info { color:#008; background-color:#ccf;border-color:#008; }
 
+#UploadStatus { color:#fff; }
 
-@media (max-width:480px) {
+@media (max-width:1024px) {
+	div.photolist > div > img { width:160px;height:160px; }
+	div.photolist > div { box-shadow:none;margin:0; }
+	
+	input.toolszoom { display:none; }
+	
 	form.simple { width:100%;margin:0;border:none; }
 	form.simple h1 { font-size:24px; }
 	form.simple div { padding:10px; }
 	form.simple label { display:block;font-size:12px;margin-top:10px; }
 	form.simple input[type="text"], form.simple input[type="email"], form.simple input[type="password"] { display:block;padding:3px;margin:5px 0;width:100%;font-size:14px; }
 	form.simple input[type="submit"] { padding:5px 15px;margin:10px 0;font-size:18px; }
+}
+
+@media (max-width:480px) {
+	div.photolist > div > img { width:80px;height:80px; }
 }
