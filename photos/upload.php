@@ -41,15 +41,17 @@ Account::requireValidUser();
 <html>
     <head>
         <title><?php echo __('Upload photos') ?></title>
-		<?php Templates::includeTemplate('Head') ?>
-		<script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
+            <?php Templates::includeTemplate('Head') ?>
+            <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
     </head>
 	<body>
-		<?php Templates::includeTemplate('MainMenu') ?>
-		<?php Templates::includeTemplate('PhotoMenu') ?>
-		<div class="photouploadprogress"><div id="AllProgress"></div></div>
-		<div id="UploadStatus"></div>
-		<div class="photouploadprogress"><div id="FileProgress"></div></div>
-		<div class="photouploadbutton"><input type="file" multiple="multiple" accept="image/jpeg" onchange="Photos.processUpload(this, 'AllProgress', 'FileProgress', 'UploadStatus')" /></div>
+            <?php Templates::includeTemplate('MainMenu') ?>
+            <?php Templates::includeTemplate('PhotoMenu') ?>
+            <div class="PhotoUpload">
+                <div class="photouploadprogress"><div id="AllProgress"></div></div>
+                <div id="UploadStatus"></div>
+                <div class="photouploadprogress"><div id="FileProgress"></div></div>
+                <div class="photouploadbutton"><input type="file" multiple="multiple" accept="image/jpeg" onchange="Photos.processUpload(this, 'AllProgress', 'FileProgress', 'UploadStatus')" /></div>
+            </div>
 	</body>
 </html>

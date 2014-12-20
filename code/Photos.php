@@ -171,7 +171,7 @@ class Photos {
 		// Generate list thumbnail
 		self::resizeImage($file['tmp_name'], self::getMediaDir().$id.'.thumb', 320, true);
 		// Generate big preview image for browser view (max. 1024 pixels height)
-		self::resizeImage($file['tmp_name'], self::getMediaDir().$id.'.preview', 640, false);
+		self::resizeImage($file['tmp_name'], self::getMediaDir().$id.'.preview', 960, false);
 		// Move original image to media folder
 		rename($file['tmp_name'], self::getMediaDir().$id);
 	}

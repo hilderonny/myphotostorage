@@ -34,7 +34,7 @@ require_once '../code/App.php';
 Account::requireValidUser();
 
 ?><!DOCTYPE html>
-<html>
+<html class="PhotoList">
     <head>
         <title><?php echo __('All photos') ?></title>
         <?php Templates::includeTemplate('Head') ?>
@@ -48,11 +48,11 @@ Account::requireValidUser();
 	<body>
             <?php Templates::includeTemplate('MainMenu') ?>
             <?php Templates::includeTemplate('PhotoMenu') ?>
-            <div class="tools">
+            <div class="Tools">
                 <button id="ToolSelectButton"><?php echo __('Select') ?></button>
                 <button id="ToolCancelButton" style="display:none"><?php echo __('Cancel') ?></button>
-				<input class="toolszoom" type="range" min="80" max="320" value="320" oninput="Photos.zoom(this.value)" />
+				<input class="ToolsZoom" type="range" min="80" max="320" value="320" oninput="Photos.zoom(this.value)" />
             </div>
-            <div id="PhotoList" class="photolist"></div>
+            <div id="PhotoList" class="PhotoList"></div>
 	</body>
 </html>

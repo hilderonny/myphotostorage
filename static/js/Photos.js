@@ -69,12 +69,14 @@ Photos = {
 		this.doRequest("getPhotoList", null, function(response) {
 			var photoIdsList = JSON.parse(response);
 			var monthnames = {"01" : "++##January##--", "02" : "++##February##--", "03" : "++##March##--", "04" : "++##April##--", "05" : "++##May##--", "06" : "++##June##--", "07" : "++##July##--", "08" : "++##August##--", "09" : "++##September##--", "10" : "++##October##--", "11" : "++##November##--", "12" : "++##December##--" };
+			var isfirst = true;
 			for (var yearmonth in photoIdsList) {
-				var monthdiv = document.createElement("div");
-				monthdiv.classList.add("month");
-				listNode.appendChild(monthdiv);
 				yearmontharray = yearmonth.split("-");
-				monthdiv.innerHTML = monthnames[yearmontharray[1]] + ' ' + yearmontharray[0];
+				var monthnode = document.createElement("div");
+				listNode.appendChild(monthnode);
+				monthnode.innerHTML = "<label for=\"month" + yearmonth + "\">" + monthnames[yearmontharray[1]] + ' ' + yearmontharray[0] + "</label><input name=\"" + yearmonth + "\" type=\"checkbox\"" + (isfirst ? " checked=\"checked\"" : "") + " />";
+				var conntainerdiv = document.createElement("div");
+				monthnode.appendChild(conntainerdiv);
 				for (var i = 0; i < photoIdsList[yearmonth].length; i++) {
 					var id = photoIdsList[yearmonth][i];
 					var container = document.createElement("div");
@@ -86,8 +88,9 @@ Photos = {
 					});
 					image.src = "images.php?type=thumb&id=" + id;
 					container.appendChild(image);
-					listNode.appendChild(container);
+					conntainerdiv.appendChild(container);
 				}
+				isfirst = false;
 			}
 		});
 	},
@@ -138,7 +141,7 @@ Photos = {
 			stylesheet.removeRule(stylesheet.zoomrule);
 		}
 		var lastindex = stylesheet.rules.length;
-		stylesheet.insertRule("div.photolist > div > img { width:" + value + "px;height:" + value + "px; }", lastindex);
+		stylesheet.insertRule("div.PhotoList > div > div > div > img { width:" + value + "px;height:" + value + "px;margin:" + (value / 20) + "px;box-shadow: 0px " + (value / 45) + "px 10px " + (value / 160) + "px rgba(0,0,0,0.5); }", lastindex);
 		stylesheet.zoomrule = lastindex;
 	}
 };
