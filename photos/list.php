@@ -46,13 +46,15 @@ Account::requireValidUser();
         </script>
     </head>
 	<body>
+		<div class="Menu">
             <?php Templates::includeTemplate('MainMenu') ?>
             <?php Templates::includeTemplate('PhotoMenu') ?>
-            <div class="Tools">
-                <button id="ToolSelectButton"><?php echo __('Select') ?></button>
-                <button id="ToolCancelButton" style="display:none"><?php echo __('Cancel') ?></button>
-				<input class="ToolsZoom" type="range" min="80" max="320" value="320" oninput="Photos.zoom(this.value)" />
-            </div>
-            <div id="PhotoList" class="PhotoList"></div>
+		</div>
+		<div class="Tools">
+			<button id="ToolSelectButton"><?php echo __('Select') ?></button>
+			<button id="ToolCancelButton" style="display:none"><?php echo __('Cancel') ?></button>
+			<input class="ToolsZoom" type="range" min="0" max="100" value="100" oninput="Photos.zoom(this.value)" />
+		</div>
+		<div id="PhotoList" class="Content PhotoList"></div>
 	</body>
 </html>

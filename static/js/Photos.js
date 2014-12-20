@@ -36,16 +36,17 @@ Photos = {
 	 * @param {function} progresscallback Callback for file uploads which is called multiply with upload progress information. Provide null if not used.
 	 */
 	doRequest : function(action, postdata, completecallback, progresscallback) {
-		var xhr = new XMLHttpRequest();
+		var self = this;
+		self.xhr = new XMLHttpRequest();
 		var formdata = new FormData();
-		xhr.open("POST", "ajax.php", true);
+		self.xhr.open("POST", "ajax.php", true);
 		if (typeof progresscallback === 'function') {
-			xhr.upload.addEventListener("progress", progresscallback, false);
+			self.xhr.upload.addEventListener("progress", progresscallback, false);
 		}
 		if (typeof completecallback === 'function') {
-			xhr.onreadystatechange = function() {
-				if (xhr.readyState === 4 && xhr.status === 200) {
-					completecallback(xhr.responseText);
+			self.xhr.onreadystatechange = function() {
+				if (self.xhr.readyState === 4 && self.xhr.status === 200) {
+					completecallback(self.xhr.responseText);
 				}
 			};
 		}
@@ -55,7 +56,7 @@ Photos = {
 				formdata.append(key, postdata[key]);
 			}
 		}
-		xhr.send(formdata);
+		self.xhr.send(formdata);
 	},
 	
 	/**
@@ -69,14 +70,23 @@ Photos = {
 		this.doRequest("getPhotoList", null, function(response) {
 			var photoIdsList = JSON.parse(response);
 			var monthnames = {"01" : "++##January##--", "02" : "++##February##--", "03" : "++##March##--", "04" : "++##April##--", "05" : "++##May##--", "06" : "++##June##--", "07" : "++##July##--", "08" : "++##August##--", "09" : "++##September##--", "10" : "++##October##--", "11" : "++##November##--", "12" : "++##December##--" };
-			var isfirst = true;
 			for (var yearmonth in photoIdsList) {
 				yearmontharray = yearmonth.split("-");
 				var monthnode = document.createElement("div");
 				listNode.appendChild(monthnode);
-				monthnode.innerHTML = "<label for=\"month" + yearmonth + "\">" + monthnames[yearmontharray[1]] + ' ' + yearmontharray[0] + "</label><input name=\"" + yearmonth + "\" type=\"checkbox\"" + (isfirst ? " checked=\"checked\"" : "") + " />";
-				var conntainerdiv = document.createElement("div");
-				monthnode.appendChild(conntainerdiv);
+				var input = document.createElement("input");
+				input.setAttribute("type", "checkbox");
+				input.setAttribute("checked", "checked");
+				monthnode.appendChild(input);
+				var label = document.createElement("label");
+				label.innerHTML = monthnames[yearmontharray[1]] + " " + yearmontharray[0] + "<span>" + photoIdsList[yearmonth].length + " ++##Photos##--</span>";
+				label.input = input;
+				label.addEventListener("click", function() {
+					this.input.click();
+				});
+				monthnode.appendChild(label);
+				var containerdiv = document.createElement("div");
+				monthnode.appendChild(containerdiv);
 				for (var i = 0; i < photoIdsList[yearmonth].length; i++) {
 					var id = photoIdsList[yearmonth][i];
 					var container = document.createElement("div");
@@ -88,7 +98,7 @@ Photos = {
 					});
 					image.src = "images.php?type=thumb&id=" + id;
 					container.appendChild(image);
-					conntainerdiv.appendChild(container);
+					containerdiv.appendChild(container);
 				}
 				isfirst = false;
 			}
@@ -97,7 +107,7 @@ Photos = {
 	
 	uploadFiles : function(files, index, fileuploadedcallback, fileprogresscallback) {
 		var self = this;
-		if (files.length <= index) {
+		if (!self.uploading || files.length <= index) {
 			return;
 		}
 		this.doRequest("uploadPhoto", {file : files[index]}, function(response) {
@@ -112,27 +122,35 @@ Photos = {
 		});
 	},
 	
-	processUpload : function(fileinput, allprogressdomnodeid, fileprogressdomnodeid, statusdomnodeid) {
+	processUpload : function(fileinput, progressdomnodeid, statusdomnodeid, completioncallback) {
 		var self = this;
-		var allprogressdomnode = document.getElementById(allprogressdomnodeid);
-		var fileprogressdomnode = document.getElementById(fileprogressdomnodeid);
+		self.uploading = true;
+		var progressdomnode = document.getElementById(progressdomnodeid);
 		var statusdomnode = document.getElementById(statusdomnodeid);
-		var filecount = fileinput.files.length;
+		self.filecount = fileinput.files.length;
+		self.uploadedfiles = 0;
 		var formatstring = "++##Uploading file {0} of {1}##--";
-		allprogressdomnode.style.width = "0%";
-		fileprogressdomnode.style.width = "0%";
-		statusdomnode.innerHTML = formatstring.replace(/\{0\}/g, 1).replace(/\{1\}/g, filecount);
+		progressdomnode.style.width = "0%";
+		statusdomnode.innerHTML = formatstring.replace(/\{0\}/g, 1).replace(/\{1\}/g, self.filecount);
 		self.uploadFiles(fileinput.files, 0, function(index) {
-			var progress = Math.round(((index + 1) * 100) / filecount);
-			if ((index + 1) < filecount) {
-				statusdomnode.innerHTML = formatstring.replace(/\{0\}/g, index + 2).replace(/\{1\}/g, filecount);
+			self.uploadedfiles = index + 1;
+			//var progress = Math.round(((index + 1) * 100) / self.filecount);
+			if ((self.uploadedfiles) < self.filecount) {
+				statusdomnode.innerHTML = formatstring.replace(/\{0\}/g, self.uploadedfiles + 1).replace(/\{1\}/g, self.filecount);
 			} else {
-				statusdomnode.innerHTML = "++##Upload complete##--";
+				statusdomnode.innerHTML = "++##Upload complete.##--";
+				completioncallback();
 			}
-			allprogressdomnode.style.width = progress + "%";
+			//progressdomnode.style.width = progress + "%";
 		}, function(progress) {
-			fileprogressdomnode.style.width = progress + "%";
+			var filepercent = 100 / self.filecount;
+			progressdomnode.style.width = (self.uploadedfiles * filepercent + progress * filepercent / 100) + "%";
 		});
+	},
+	
+	cancelUpload : function() {
+		this.uploading = false;
+		this.xhr.abort();
 	},
 	
 	zoom : function(value) {
@@ -141,7 +159,9 @@ Photos = {
 			stylesheet.removeRule(stylesheet.zoomrule);
 		}
 		var lastindex = stylesheet.rules.length;
-		stylesheet.insertRule("div.PhotoList > div > div > div > img { width:" + value + "px;height:" + value + "px;margin:" + (value / 20) + "px;box-shadow: 0px " + (value / 45) + "px 10px " + (value / 160) + "px rgba(0,0,0,0.5); }", lastindex);
+		var size = 80 + 2.4 * value;
+		var margin = value * .1;
+		stylesheet.insertRule("div.PhotoList > div > div > div > img { width:" + size + "px;height:" + size + "px;margin:" + margin + "px;box-shadow: 0px " + (value * .05) + "px " + (value * .1) + "px 0px rgba(0,0,0,0.5); }", lastindex);
 		stylesheet.zoomrule = lastindex;
 	}
 };

@@ -26,36 +26,41 @@ THE SOFTWARE.
     Author     : Ronny Hildebrandt <ronny.hildebrandt@avorium.de>
 */
 
-* { margin:0;padding:0;box-sizing: border-box; }
+* { margin:0;padding:0;box-sizing: border-box;font-size:16px; }
 
-html { font-family:sans-serif;background-color:#222; }
-html.PhotoList { background-color: #777; }
+:focus { outline:0; }
+a { color:#777; text-decoration:none; }
+a:hover { text-decoration:underline; }
+html { font-family:sans-serif;background-color:#FFF; }
+html.PhotoList { background-color: #FFF; }
 /*html.PhotoList > body { overflow-y: scroll; }*/
 
-div.MainMenu { position: fixed;background-color: #dde;height: 20px;top: 0;width: 200px;border-right:1px solid #446;z-index:100;}
-div.PhotoMenu { position: fixed;background-color: #dde;bottom:0;top: 20px;width: 200px;border-right:1px solid #446;z-index:100;}
-div.PhotoMenu > a { display:block; }
+div.Menu { position:fixed;top:20px;left:20px;width:200px;border:1px solid #B7B7B7; }
+div.Menu a { display:block; margin:10px 20px; }
+div.PhotoMenu { border-top:1px solid #DFDFDF;}
 
-div.PhotoList { padding:0 10px 10px 10px;margin: 40px 0px 0px 200px; }
-div.PhotoList > div { clear:both;padding-top:10px;position:relative;/*float:none;clear:both;padding:15px 15px 0px 15px;box-shadow:none;margin:0;background: linear-gradient(#333, rgba(0,0,0,0));border-radius: 10px 10px 0 0;color: #fff;font-weight: bold;*/ }
-div.PhotoList > div > label { cursor:pointer;display:block;width:100%;padding:10px 15px 5px 30px;box-shadow:none;margin:0;background: linear-gradient(#333, #777);border-radius: 10px 10px 0 0;color: #fff;font-weight: bold; }
-div.PhotoList > div > input { display:block;clear:both;width:100%;height:0;position:absolute;top:20px;left:-50px;right:0;width:100%; }
-div.PhotoList > div > input::before { content:">";background-color:#fff;-webkit-mask:url(../img/arrow-right.svg) no-repeat;color:#fff;display:block;position:absolute;top:-10px;left:60px;padding:10px 10px;right:10px; }
-div.PhotoList > div > input:checked::before { content:"";-webkit-mask:url(../img/arrow-down.svg) no-repeat; }
-div.PhotoList > div > input + * { display:none; }
-div.PhotoList > div > input:checked + * { display:block; }
+div.Content { margin: 65px 20px 20px 240px; }
+div.PhotoList > div { clear:both;padding-top:10px;position:relative; }
+div.PhotoList > div > input { display:none; }
+div.PhotoList > div > input ~ div:first-of-type { display:none; }
+div.PhotoList > div > input:checked ~ div:first-of-type { display:block; }
+div.PhotoList > div > label { cursor:pointer;display:block;width:100%;padding:5px 10px 5px 30px;box-shadow:none;margin:0 0 10px 0;background:#FFAF02;border-radius:5px;color: #fff; }
+div.PhotoList > div > label::before { content: "";background-color: #fff;-webkit-mask: url(../img/arrow-right.svg) no-repeat;display: block;width: 20px;height: 20px;position: absolute;left: 10px;top: 19px; }
+div.PhotoList > div > input:checked + label::before { -webkit-mask-image: url(../img/arrow-down.svg); }
+div.PhotoList > div > label > span { float: right;font-size: 0.7em;color: #FFEDCC;line-height: 16px; }
 div.PhotoList > div > div > div { float:left; }
-div.PhotoList > div > div > div > img { display: block;width:320px;height:320px;box-shadow:0px 7px 10px 2px rgba(0,0,0,0.5);margin:15px; }
-div.PhotoList:after { content:"";display:block;clear:both;height:0; }
+div.PhotoList > div > div > div > img { display: block;width:320px;height:320px;box-shadow:0px 5px 10px 0px rgba(0,0,0,0.5);margin:10px; }
+div.PhotoList::after { content:"";display:block;clear:both;height:0; }
 
-div.PhotoUpload { padding:10px 10px 10px 10px;margin-left:200px; }
+div.PhotoUpload { padding-top:20px; }
+div.UploadProgress { border: 1px solid #B7B7B7;border-radius:5px;height:20px;margin:20px 0; }
+div.UploadProgress > div { height:18px;width:0%;background:#FFAF02;border-radius: 4px; }
 
-div.photouploadprogress { border:1px solid #000; background-color:#ccc;border-radius: 5px; }
-div.photouploadprogress > div { height:10px;width:0;background-color:#0c0;border-radius: 5px; }
-
-div.Tools { position:fixed; left:200px;top:0;right:0;height:40px;background: linear-gradient(#ccc, #888);border-bottom:1px solid #444;z-index:1;padding:0 10px; }
-div.Tools > button { float:right;display:block;background: linear-gradient(#ddd, #999);border:1px solid #666;border-radius:3px; color:#000;line-height:32px;margin-top:2px;padding:0 5px; }
-div.Tools > input[type="range"] { float:left;display:block;height:40px; }
+div.Tools { position: fixed;left: 240px;top: 0;right: 20px;height: 60px;border-bottom: 1px solid #FFAF02;z-index: 1;padding-top: 19px;background-color: #fff;box-shadow:0px 0px 20px 10px #fff; }
+div.Tools > button { float:right;display:block;background:#FFF;border:none;color:#FFAF02;padding:11px;cursor:pointer; }
+div.Tools > input[type="range"] { -webkit-appearance: none;float:left;display:block;height:40px;cursor:pointer; }
+div.Tools > input[type="range"]::-webkit-slider-runnable-track { width: 100px;height:6px;background:none;border: 1px solid #B7B7B7;border-radius:3px; }
+div.Tools > input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none;height:16px;width: 16px;border-radius:8px;background:#FFAF02;margin-top:-6px;}
 
 form.simple { background-color: #fff;width: 500px;margin: 20px auto;padding:0;border:1px solid #000; }
 form.simple h1 { background-color:#333;color:#ddd;margin:0;padding:10px;border-bottom:1px solid #000; }
@@ -69,8 +74,6 @@ p.notification { border:1px solid #888;background-color:#ccc;color:#888;padding:
 p.error { color:#800; background-color:#fcc;border-color:#800; }
 p.success { color:#080; background-color:#cfc;border-color:#080; }
 p.info { color:#008; background-color:#ccf;border-color:#008; }
-
-#UploadStatus { color:#fff; }
 
 @media (max-width:1024px) {
 	div.PhotoList > div > img { width:160px;height:160px; }
