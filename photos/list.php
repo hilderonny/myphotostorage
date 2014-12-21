@@ -47,8 +47,11 @@ Account::requireValidUser();
     </head>
 	<body>
 		<div class="Menu">
-            <?php Templates::includeTemplate('MainMenu') ?>
-            <?php Templates::includeTemplate('PhotoMenu') ?>
+			<input type="checkbox" />
+			<div>
+				<?php Templates::includeTemplate('MainMenu') ?>
+				<?php Templates::includeTemplate('PhotoMenu') ?>
+			</div>
 		</div>
 		<div class="Tools">
 			<button id="ToolSelectButton"><?php echo __('Select') ?></button>

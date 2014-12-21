@@ -64,8 +64,11 @@ Account::requireValidUser();
     </head>
 	<body>
 		<div class="Menu">
-            <?php Templates::includeTemplate('MainMenu') ?>
-            <?php Templates::includeTemplate('PhotoMenu') ?>
+			<input type="checkbox" />
+			<div>
+				<?php Templates::includeTemplate('MainMenu') ?>
+				<?php Templates::includeTemplate('PhotoMenu') ?>
+			</div>
 		</div>
 		<div class="Tools">
 			<button id="ToolSelectFilesButton" onclick="document.getElementById('SelectPhotos').click();return false;"><?php echo __('Select photos') ?></button>
