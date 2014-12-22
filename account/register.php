@@ -56,7 +56,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		<?php Templates::includeTemplate('Head') ?>
     </head>
     <body>
-        <form method="post" class="simple register">
+        <form method="post" class="Simple Register">
             <h1><?php echo __('Register a new account') ?></h1>
             <div>
                 <?php if ($error) : ?>

@@ -53,7 +53,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		<?php Templates::includeTemplate('Head') ?>
     </head>
     <body>
-		<form method="post" class="simple forgotpassword">
+		<form method="post" class="Simple Forgotpassword">
 			<h1><?php echo __('Request password reset') ?></h1>
 			<div>
 				<?php if ($forgotpasswordsent) : ?>

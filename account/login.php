@@ -59,12 +59,12 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 ?><!DOCTYPE html>
 <html>
     <head>
-        <title><?php echo __('MyPhotoStorage Login') ?></title>
+        <title><?php echo __('Login') ?></title>
 		<?php Templates::includeTemplate('Head') ?>
     </head>
     <body>
-		<form method="post" class="simple login">
-			<h1><?php echo __('MyPhotoStorage Login') ?></h1>
+		<form method="post" class="Simple Login">
+			<h1><?php echo __('Login') ?></h1>
 			<div>
 				<?php if ($error) : ?>
 				<p class="notification error"><?php echo $error ?></p>

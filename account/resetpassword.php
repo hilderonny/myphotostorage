@@ -50,7 +50,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		<?php Templates::includeTemplate('Head') ?>
     </head>
     <body>
-		<form method="post" class="simple resetpassword">
+		<form method="post" class="Simple Resetpassword">
 			<h1><?php echo __('Reset password') ?></h1>
 			<div>
 				<?php if ($passwordwasreset) : ?>
