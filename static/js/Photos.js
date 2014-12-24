@@ -156,9 +156,9 @@ Photos = {
 	zoom : function(value) {
 		var stylesheet = document.styleSheets[0];
 		if (stylesheet.zoomrule) {
-			stylesheet.removeRule(stylesheet.zoomrule);
+			stylesheet.deleteRule(stylesheet.zoomrule);
 		}
-		var lastindex = stylesheet.rules.length;
+		var lastindex = stylesheet.cssRules.length;
 		var size = 80 + 2.4 * value;
 		var margin = value * .1;
 		stylesheet.insertRule("div.PhotoList > div > div > div > img { width:" + size + "px;height:" + size + "px;margin:" + margin + "px;box-shadow: 0px " + (value * .05) + "px " + (value * .1) + "px 0px rgba(0,0,0,0.5); }", lastindex);

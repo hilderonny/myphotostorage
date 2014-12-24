@@ -37,7 +37,7 @@ html.PhotoList { background-color: #FFF; }
 
 div.Menu { position:fixed;top:20px;left:20px;width:200px;border:1px solid #B7B7B7; }
 div.Menu > input[type="checkbox"] { z-index:300;display:none;position:absolute;top:-20px;left:0;width:0;height:0; }
-div.Menu > input[type="checkbox"]:before { content:"";width:40px;height:40px;background:#FFAF02;position:absolute;top:20px;left:0;-webkit-mask-image: url(../img/menu.svg);transition:left 0.5s; }
+div.Menu > input[type="checkbox"]:before { content:"";width:40px;height:40px;background:#FFAF02;position:absolute;top:20px;left:0;background:#FFAF02 url(../img/menu.svg) no-repeat;transition:left 0.5s; }
 div.Menu > input[type="checkbox"]:checked::before { left:160px; }
 div.Menu > input[type="checkbox"] + div::after { transition:left 0.5s, background-color 0.5s;content:"";display:block;z-index:100;position:fixed;top:0;left:0;right:100%;bottom:0;background-color:rgba(0,0,0,0); }
 div.Menu a { display:block; margin:10px 20px; }
@@ -49,8 +49,8 @@ div.PhotoList > div > input { display:none; }
 div.PhotoList > div > input ~ div:first-of-type { display:none; }
 div.PhotoList > div > input:checked ~ div:first-of-type { display:block; }
 div.PhotoList > div > label { cursor:pointer;display:block;width:100%;padding:5px 10px 5px 30px;box-shadow:none;margin:0 0 10px 0;background:#FFAF02;border-radius:5px;color: #fff; }
-div.PhotoList > div > label::before { content: "";background-color: #fff;-webkit-mask: url(../img/arrow-right.svg) no-repeat;display: block;width: 20px;height: 20px;position: absolute;left: 10px;top: 19px; }
-div.PhotoList > div > input:checked + label::before { -webkit-mask-image: url(../img/arrow-down.svg); }
+div.PhotoList > div > label::before { content: "";background:url(../img/arrow-right.svg) no-repeat;display: block;width: 20px;height: 20px;position: absolute;left: 10px;top: 19px; }
+div.PhotoList > div > input:checked + label::before { background-image: url(../img/arrow-down.svg); }
 div.PhotoList > div > label > span { float: right;font-size: 0.7em;color: #FFEDCC;line-height: 16px; }
 div.PhotoList > div > div > div { float:left; }
 div.PhotoList > div > div > div > img { display: block;width:320px;height:320px;box-shadow:0px 5px 10px 0px rgba(0,0,0,0.5);margin:10px; }
@@ -62,9 +62,18 @@ div.UploadProgress > div { height:18px;width:0%;background:#FFAF02;border-radius
 
 div.Tools { position: fixed;left: 240px;top: 0;right: 20px;height: 60px;border-bottom: 1px solid #FFAF02;z-index: 1;padding-top: 19px;background-color:rgba(255,255,255,0.95);box-shadow:0px 0px 20px 10px #fff; }
 div.Tools > button { float:right;display:block;border:none;color:#FFAF02;padding:11px;cursor:pointer;background:none; }
-div.Tools > input[type="range"] { -webkit-appearance: none;float:left;display:block;height:40px;cursor:pointer;background:none; }
-div.Tools > input[type="range"]::-webkit-slider-runnable-track { width: 100px;height:6px;background:none;border: 1px solid #B7B7B7;border-radius:3px; }
-div.Tools > input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none;height:16px;width: 16px;border-radius:8px;background:#FFAF02;margin-top:-6px;border:none;}
+div.Tools > div.ToolsZoom { float:left;position:relative;}
+div.Tools > div.ToolsZoom::before { position: absolute;top: 15px;left: 13px;content: "";background: url(../img/zoom.svg) no-repeat;width: 19px;height: 15px;background-size: 65%;}
+div.Tools > div.ToolsZoom::after { position: absolute;top: 12px;right: 6px;content: "";background: url(../img/zoom.svg) no-repeat;width: 19px;height: 15px;}
+div.Tools > div.ToolsZoom > input[type=range] { margin:0 30px;-webkit-appearance: none;float:left;display:block;width:100px;height:40px;cursor:pointer;background:none; }
+div.Tools > div.ToolsZoom > input[type=range]::-webkit-slider-runnable-track { width: 100px;height:6px;background:none;border: 1px solid #B7B7B7;border-radius:3px; }
+div.Tools > div.ToolsZoom > input[type=range]::-webkit-slider-thumb { -webkit-appearance: none;height:16px;width: 16px;border-radius:8px;background:#FFAF02;margin-top:-6px;border:none;}
+div.Tools > div.ToolsZoom > input[type=range]::-ms-track {width: 100px;height: 5px;background: transparent;border-color: transparent;border-width: 5px 0;color: transparent;}
+div.Tools > div.ToolsZoom > input[type=range]::-ms-fill-lower { background:none;border: 1px solid #B7B7B7;border-radius:3px; }
+div.Tools > div.ToolsZoom > input[type=range]::-ms-fill-upper { background:none;border: 1px solid #B7B7B7;border-radius:3px; }
+div.Tools > div.ToolsZoom > input[type=range]::-ms-thumb { height:16px;width: 16px;border-radius:8px;background:#FFAF02;border:none; }
+div.Tools > div.ToolsZoom > input[type=range]::-moz-range-track {width: 100px;height:4px;background:none;border: 1px solid #B7B7B7;border-radius:3px;}
+div.Tools > div.ToolsZoom > input[type=range]::-moz-range-thumb {height:14px;width: 14px;border-radius:8px;background:#FFAF02;border:none;}
 
 form.Simple { background-color: #fff;width: 500px;margin: 20px auto;padding:0;border:1px solid #F3D492;border-radius:5px; }
 form.Simple h1 { font-size:2em;background-color:#FDF6E5;color:#000;margin:0;padding:10px;border-bottom:1px solid #F3D492;border-radius:5px 5px 0 0; }

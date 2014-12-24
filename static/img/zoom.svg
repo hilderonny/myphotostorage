@@ -1,0 +1,6 @@
+<!DOCTYPE svg>
+<svg height="15px" width="19px" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<polygon points="0.5,0.5 0.5,14.5 18.5,14.5 18.5,0.5" fill="transparent" stroke="#B7B7B7" stroke-width="1" />
+	<polygon points="0.5,11 0.5,14.5 18.5,14.5 18.5,11 12,4 6,10 4,8" fill="#B7B7B7" />
+	<circle cx="5" cy="4" r="2" fill="#B7B7B7" />
+</svg>

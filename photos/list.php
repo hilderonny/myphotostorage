@@ -56,7 +56,9 @@ Account::requireValidUser();
 		<div class="Tools">
 			<button id="ToolSelectButton"><?php echo __('Select') ?></button>
 			<button id="ToolCancelButton" style="display:none"><?php echo __('Cancel') ?></button>
-			<input class="ToolsZoom" type="range" min="0" max="100" value="100" oninput="Photos.zoom(this.value)" />
+			<div class="ToolsZoom">
+				<input type="range" min="0" max="100" value="100" oninput="Photos.zoom(this.value)" onchange="Photos.zoom(this.value)" />
+			</div>
 		</div>
 		<div id="PhotoList" class="Content PhotoList"></div>
 	</body>
