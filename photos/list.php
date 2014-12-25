@@ -38,24 +38,24 @@ Account::requireValidUser();
     <head>
         <title><?php echo __('All photos') ?></title>
         <?php Templates::includeTemplate('Head') ?>
+        <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
         <script type="text/javascript">
-                window.addEventListener('load', function() {
-                        Photos.getList('PhotoList');
-                });
+			window.addEventListener('load', function() {
+					Photos.getList('PhotoList');
+			});
         </script>
     </head>
 	<body>
 		<div class="Menu">
-			<input type="checkbox" />
+			<button onclick="Menu.handleClick(this);"></button>
 			<div>
 				<?php Templates::includeTemplate('MainMenu') ?>
 				<?php Templates::includeTemplate('PhotoMenu') ?>
 			</div>
 		</div>
 		<div class="Tools">
-			<button id="ToolSelectButton"><?php echo __('Select') ?></button>
-			<button id="ToolCancelButton" style="display:none"><?php echo __('Cancel') ?></button>
+			<button onclick="Photos.handleSelect(this);"><?php echo __('Select') ?></button>
 			<div class="ToolsZoom">
 				<input type="range" min="0" max="100" value="100" oninput="Photos.zoom(this.value)" onchange="Photos.zoom(this.value)" />
 			</div>

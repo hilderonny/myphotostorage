@@ -66,14 +66,15 @@ Photos = {
 	 * list into.
 	 */
 	getList : function(listNodeId) {
-		var listNode = document.getElementById(listNodeId);
+		var self = this;
+		this.listNode = document.getElementById(listNodeId);
 		this.doRequest("getPhotoList", null, function(response) {
 			var photoIdsList = JSON.parse(response);
 			var monthnames = {"01" : "++##January##--", "02" : "++##February##--", "03" : "++##March##--", "04" : "++##April##--", "05" : "++##May##--", "06" : "++##June##--", "07" : "++##July##--", "08" : "++##August##--", "09" : "++##September##--", "10" : "++##October##--", "11" : "++##November##--", "12" : "++##December##--" };
 			for (var yearmonth in photoIdsList) {
 				yearmontharray = yearmonth.split("-");
 				var monthnode = document.createElement("div");
-				listNode.appendChild(monthnode);
+				self.listNode.appendChild(monthnode);
 				var input = document.createElement("input");
 				input.setAttribute("type", "checkbox");
 				input.setAttribute("checked", "checked");
@@ -94,7 +95,17 @@ Photos = {
 					// TODO: Löschen-Funktion nur temporär
 					image.photoId = id;
 					image.addEventListener("click", function() {
-						window.open("images.php?type=preview&id=" + this.photoId);
+						if (self.listNode.isInSelectionMode) {
+							if (this.isSelected) {
+								this.isSelected = false;
+								this.parentNode.classList.remove("Selected");
+							} else {
+								this.isSelected = true;
+								this.parentNode.classList.add("Selected");
+							}
+						} else {
+							window.open("images.php?type=preview&id=" + this.photoId);
+						}
 					});
 					image.src = "images.php?type=thumb&id=" + id;
 					container.appendChild(image);
@@ -155,6 +166,9 @@ Photos = {
 	
 	zoom : function(value) {
 		var stylesheet = document.styleSheets[0];
+		if (stylesheet.selectableborderrule) {
+			stylesheet.deleteRule(stylesheet.selectableborderrule);
+		}
 		if (stylesheet.zoomrule) {
 			stylesheet.deleteRule(stylesheet.zoomrule);
 		}
@@ -163,5 +177,33 @@ Photos = {
 		var margin = value * .1;
 		stylesheet.insertRule("div.PhotoList > div > div > div > img { width:" + size + "px;height:" + size + "px;margin:" + margin + "px;box-shadow: 0px " + (value * .05) + "px " + (value * .1) + "px 0px rgba(0,0,0,0.5); }", lastindex);
 		stylesheet.zoomrule = lastindex;
+		stylesheet.insertRule("div.PhotoList.Selectable > div > div > div:after { margin: " + margin + "px;}", lastindex + 1);
+		stylesheet.selectableborderrule = lastindex + 1;
+	},
+	
+	handleSelect : function(selectButton) {
+		if (selectButton.isInSelectionMode) {
+			selectButton.isInSelectionMode = false;
+			selectButton.innerHTML = "++##Select##--";
+			if (this.listNode) {
+				this.listNode.isInSelectionMode = false;
+				this.listNode.classList.remove("Selectable");
+				var images = this.listNode.getElementsByTagName("img");
+				for (var i in images) {
+					var image = images[i];
+					if (image.isSelected) {
+						image.isSelected = false;
+						image.parentNode.classList.remove("Selected");
+					}
+				}
+			}
+		} else {
+			selectButton.isInSelectionMode = true;
+			selectButton.innerHTML = "++##Cancel##--";
+			if (this.listNode) {
+				this.listNode.isInSelectionMode = true;
+				this.listNode.classList.add("Selectable");
+			}
+		}
 	}
 };
