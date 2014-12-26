@@ -65,9 +65,10 @@ Photos = {
 	 * @param {string} listNodeId ID of the DOM element where to put the photos
 	 * list into.
 	 */
-	getList : function(listNodeId) {
+	getList : function(listNodeId, selectListener) {
 		var self = this;
 		this.listNode = document.getElementById(listNodeId);
+		this.listNode.selectedImageCount = 0;
 		this.doRequest("getPhotoList", null, function(response) {
 			var photoIdsList = JSON.parse(response);
 			var monthnames = {"01" : "++##January##--", "02" : "++##February##--", "03" : "++##March##--", "04" : "++##April##--", "05" : "++##May##--", "06" : "++##June##--", "07" : "++##July##--", "08" : "++##August##--", "09" : "++##September##--", "10" : "++##October##--", "11" : "++##November##--", "12" : "++##December##--" };
@@ -99,10 +100,13 @@ Photos = {
 							if (this.isSelected) {
 								this.isSelected = false;
 								this.parentNode.classList.remove("Selected");
+								self.listNode.selectedImageCount--;
 							} else {
 								this.isSelected = true;
 								this.parentNode.classList.add("Selected");
+								self.listNode.selectedImageCount++;
 							}
+							selectListener(self.listNode.selectedImageCount);
 						} else {
 							window.open("images.php?type=preview&id=" + this.photoId);
 						}
@@ -205,5 +209,19 @@ Photos = {
 				this.listNode.classList.add("Selectable");
 			}
 		}
+	},
+	
+	deleteSelectedPhotos : function() {
+		var images = this.listNode.getElementsByTagName('img');
+		var ids = [];
+		for (var i in images) {
+			var image = images[i];
+			if (image.isSelected) {
+				ids.push(image.photoId);
+			}
+		}
+		this.doRequest('deletePhotos', { ids : JSON.stringify(ids) }, function(response) {
+			console.log(response);
+		}, null);
 	}
 };

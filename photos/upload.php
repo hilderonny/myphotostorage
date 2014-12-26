@@ -64,7 +64,7 @@ Account::requireValidUser();
     </head>
 	<body>
 		<div class="Menu">
-			<input type="checkbox" />
+			<button onclick="Menu.handleClick(this);"></button>
 			<div>
 				<?php Templates::includeTemplate('MainMenu') ?>
 				<?php Templates::includeTemplate('PhotoMenu') ?>

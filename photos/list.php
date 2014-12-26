@@ -38,12 +38,25 @@ Account::requireValidUser();
     <head>
         <title><?php echo __('All photos') ?></title>
         <?php Templates::includeTemplate('Head') ?>
+        <script src="<?php echo App::getUrl('static/js/Dialog.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
         <script type="text/javascript">
 			window.addEventListener('load', function() {
-					Photos.getList('PhotoList');
+				Photos.getList('PhotoList', function(selectcount) {
+					var deletebutton = document.getElementById('DeleteButton');
+					deletebutton.style.display = selectcount > 0 ? 'block' : 'none';
+				});
 			});
+			
+			function handleDelete() {
+				var list = document.getElementById('PhotoList');
+				Dialog.confirm('<?php echo __('Do you really want to delete {0} photo(s)?') ?>'.replace('{0}', list.selectedImageCount), function(confirm) {
+					if (confirm) {
+						Photos.deleteSelectedPhotos();
+					}
+				});
+			}
         </script>
     </head>
 	<body>
@@ -55,10 +68,12 @@ Account::requireValidUser();
 			</div>
 		</div>
 		<div class="Tools">
-			<button onclick="Photos.handleSelect(this);"><?php echo __('Select') ?></button>
+			<button class="Select" onclick="Photos.handleSelect(this);"><?php echo __('Select') ?></button>
 			<div class="ToolsZoom">
 				<input type="range" min="0" max="100" value="100" oninput="Photos.zoom(this.value)" onchange="Photos.zoom(this.value)" />
 			</div>
+			<button id="ShareButton" class="Share" />
+			<button id="DeleteButton" class="Delete" onclick="handleDelete();" />
 		</div>
 		<div id="PhotoList" class="Content PhotoList"></div>
 	</body>

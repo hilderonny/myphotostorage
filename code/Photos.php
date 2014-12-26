@@ -175,4 +175,8 @@ class Photos {
 		// Move original image to media folder
 		rename($file['tmp_name'], self::getMediaDir().$id);
 	}
+	
+	static function deletePhotos($ids, $userid) {
+		print_r($ids);
+	}
 }

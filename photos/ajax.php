@@ -36,4 +36,5 @@ $userid = $_SESSION['userid'];
 switch ($action) {
 	case 'getPhotoList': echo Photos::getPhotoList($userid); break;
 	case 'uploadPhoto': Photos::uploadPhoto($_FILES['file'], $userid); break;
+	case 'deletePhotos': Photos::deletePhotos(json_decode(filter_input(INPUT_POST, 'ids')), $userid); break;
 }

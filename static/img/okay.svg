@@ -22,6 +22,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
-<svg height="9px" width="9px" version="1.1" xmlns="http://www.w3.org/2000/svg">
-	<polygon points="0,0 4.5,9 9,0" fill="#FFFFFF" />
+<svg height="32px" width="32px" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<polygon points="4,14 12,26 27,5 12,17" fill="#FFAF02" stroke="#FFFFFF" stroke-width="1" />
 </svg>
