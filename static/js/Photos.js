@@ -226,7 +226,11 @@ Photos = {
                     self.progressdialog.setProgress(percent, self.messagetemplate.replace("{0}", processedfilecount + 1).replace("{1}", self.filecount));
                     var imagenode = imagenodes.shift();
                     self.doRequest('deletePhoto', { id : imagenode.photoId }, function(response) {
-                        imagenode.parentNode.parentNode.removeChild(imagenode.parentNode);
+                        var monthlistnode = imagenode.parentNode.parentNode;
+                        monthlistnode.removeChild(imagenode.parentNode);
+                        if (monthlistnode.childNodes.length < 1) {
+                            monthlistnode.parentNode.parentNode.removeChild(monthlistnode.parentNode);
+                        }
                         self.listNode.selectedImageCount--;
                         doDeleteRequest(imagenodes);
                     }, null);
