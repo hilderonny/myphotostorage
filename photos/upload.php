@@ -41,43 +41,44 @@ Account::requireValidUser();
 <html>
     <head>
         <title><?php echo __('Upload photos') ?></title>
-            <?php Templates::includeTemplate('Head') ?>
-            <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
-			<script type="text/javascript">
-				function handleSelection(fileinput) {
-					Photos.processUpload(fileinput, "ProgressCompletion", "UploadStatus", function() {
-						document.getElementById("ToolSelectFilesButton").style.display = "block";
-						document.getElementById("ToolCancelButton").style.display = "none";
-					});
-					document.getElementById("ToolSelectFilesButton").style.display = "none";
-					document.getElementById("ToolCancelButton").style.display = "block";
-				}
-				
-				function handleCancel() {
-					Photos.cancelUpload();
-					document.getElementById("ToolSelectFilesButton").style.display = "block";
-					document.getElementById("ToolCancelButton").style.display = "none";
-					document.getElementById("UploadStatus").innerHTML = "<?php echo __('Upload cancelled.') ?>";
-					document.getElementById("ProgressCompletion").style.width = "0%";
-				}
-			</script>
+        <?php Templates::includeTemplate('Head') ?>
+        <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
+        <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
+        <script type="text/javascript">
+            function handleSelection(fileinput) {
+                Photos.processUpload(fileinput, "ProgressCompletion", "UploadStatus", function() {
+                    document.getElementById("ToolSelectFilesButton").style.display = "block";
+                    document.getElementById("ToolCancelButton").style.display = "none";
+                });
+                document.getElementById("ToolSelectFilesButton").style.display = "none";
+                document.getElementById("ToolCancelButton").style.display = "block";
+            }
+
+            function handleCancel() {
+                Photos.cancelUpload();
+                document.getElementById("ToolSelectFilesButton").style.display = "block";
+                document.getElementById("ToolCancelButton").style.display = "none";
+                document.getElementById("UploadStatus").innerHTML = "<?php echo __('Upload cancelled.') ?>";
+                document.getElementById("ProgressCompletion").style.width = "0%";
+            }
+        </script>
     </head>
-	<body>
-		<div class="Menu">
-			<button onclick="Menu.handleClick(this);"></button>
-			<div>
-				<?php Templates::includeTemplate('MainMenu') ?>
-				<?php Templates::includeTemplate('PhotoMenu') ?>
-			</div>
-		</div>
-		<div class="Tools">
-			<button id="ToolSelectFilesButton" onclick="document.getElementById('SelectPhotos').click();return false;"><?php echo __('Select photos') ?></button>
-			<button id="ToolCancelButton" style="display:none" onclick="handleCancel();"><?php echo __('Cancel') ?></button>
-		</div>
-		<div class="Content PhotoUpload">
-			<div id="UploadStatus"><?php echo __('Please click on "Select photos" for upload.') ?></div>
-			<div class="UploadProgress"><div id="ProgressCompletion"></div></div>
-			<input id="SelectPhotos" type="file" multiple="multiple" accept="image/jpeg" onchange="handleSelection(this);" style="display:none" />
-		</div>
-	</body>
+    <body>
+        <div class="Menu">
+            <button onclick="Menu.handleClick(this);"></button>
+            <div>
+                <?php Templates::includeTemplate('MainMenu') ?>
+                <?php Templates::includeTemplate('PhotoMenu') ?>
+            </div>
+        </div>
+        <div class="Tools">
+            <button class="Select" id="ToolSelectFilesButton" onclick="document.getElementById('SelectPhotos').click();return false;"><?php echo __('Select photos') ?></button>
+            <button class="Select" id="ToolCancelButton" style="display:none" onclick="handleCancel();"><?php echo __('Cancel') ?></button>
+        </div>
+        <div class="Content PhotoUpload">
+            <div id="UploadStatus"><?php echo __('Please click on "Select photos" for upload.') ?></div>
+            <div class="UploadProgress"><div id="ProgressCompletion"></div></div>
+            <input id="SelectPhotos" type="file" multiple="multiple" accept="image/jpeg" onchange="handleSelection(this);" style="display:none" />
+        </div>
+    </body>
 </html>

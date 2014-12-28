@@ -211,18 +211,25 @@ Photos = {
 		}
 	},
 	
-	deleteSelectedPhotos : function() {
+	deleteSelectedPhotos : function(completioncallback) {
 		var self = this;
+                self.messagetemplate = '++##Deleting photo {0} of {1}##--';
+                self.canceldeletion = false;
 		var doDeleteRequest = function(imagenodes) {
-			if (imagenodes.length < 1) {
-				return;
-			}
-			var imagenode = imagenodes.shift();
-			self.doRequest('deletePhoto', { id : imagenode.photoId }, function(response) {
-				imagenode.parentNode.parentNode.removeChild(imagenode.parentNode);
-				self.listNode.selectedImageCount--;
-				doDeleteRequest(imagenodes);
-			}, null);
+                    if (self.canceldeletion || imagenodes.length < 1) {
+                        self.progressdialog.close();
+                        completioncallback(!self.canceldeletion);
+                        return;
+                    }
+                    var processedfilecount = self.filecount - imagenodes.length;
+                    var percent = processedfilecount * 100 / self.filecount;
+                    self.progressdialog.setProgress(percent, self.messagetemplate.replace("{0}", processedfilecount + 1).replace("{1}", self.filecount));
+                    var imagenode = imagenodes.shift();
+                    self.doRequest('deletePhoto', { id : imagenode.photoId }, function(response) {
+                        imagenode.parentNode.parentNode.removeChild(imagenode.parentNode);
+                        self.listNode.selectedImageCount--;
+                        doDeleteRequest(imagenodes);
+                    }, null);
 		};
 		var images = this.listNode.getElementsByTagName('img');
 		var imagenodes = [];
@@ -232,6 +239,10 @@ Photos = {
 				imagenodes.push(image);
 			}
 		}
-		doDeleteRequest(imagenodes);
+                self.filecount = imagenodes.length;
+                self.progressdialog = Dialog.progress(self.messagetemplate.replace("{0}", 1).replace("{1}", self.filecount), function() {
+                    self.canceldeletion = true;
+                });
+                doDeleteRequest(imagenodes);
 	}
 };

@@ -189,6 +189,7 @@ class Photos {
 		if (count($photos) < 1) {
 			return;
 		}
+                return;
 		// Delete files
 		unlink(self::getMediaDir().$id.'.preview');
 		unlink(self::getMediaDir().$id.'.thumb');
