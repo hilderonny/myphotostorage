@@ -51,9 +51,14 @@ Account::requireValidUser();
 			
 			function handleDelete() {
 				var list = document.getElementById('PhotoList');
-				Dialog.confirm('<?php echo __('Do you really want to delete {0} photo(s)?') ?>'.replace('{0}', list.selectedImageCount), function(confirm) {
+				var onephototemplate = '<?php echo __('Do you really want to delete this photo?') ?>';
+				var multipmephotostemplate = '<?php echo __('Do you really want to delete {0} photos?') ?>';
+				var templatetouse = list.selectedImageCount > 1 ? multipmephotostemplate.replace('{0}', list.selectedImageCount) : onephototemplate;
+				Dialog.confirm(templatetouse, function(confirm) {
 					if (confirm) {
 						Photos.deleteSelectedPhotos();
+						var deletebutton = document.getElementById('DeleteButton');
+						deletebutton.style.display = 'none';
 					}
 				});
 			}

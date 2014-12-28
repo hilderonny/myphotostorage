@@ -212,16 +212,26 @@ Photos = {
 	},
 	
 	deleteSelectedPhotos : function() {
+		var self = this;
+		var doDeleteRequest = function(imagenodes) {
+			if (imagenodes.length < 1) {
+				return;
+			}
+			var imagenode = imagenodes.shift();
+			self.doRequest('deletePhoto', { id : imagenode.photoId }, function(response) {
+				imagenode.parentNode.parentNode.removeChild(imagenode.parentNode);
+				self.listNode.selectedImageCount--;
+				doDeleteRequest(imagenodes);
+			}, null);
+		};
 		var images = this.listNode.getElementsByTagName('img');
-		var ids = [];
+		var imagenodes = [];
 		for (var i in images) {
 			var image = images[i];
 			if (image.isSelected) {
-				ids.push(image.photoId);
+				imagenodes.push(image);
 			}
 		}
-		this.doRequest('deletePhotos', { ids : JSON.stringify(ids) }, function(response) {
-			console.log(response);
-		}, null);
+		doDeleteRequest(imagenodes);
 	}
 };

@@ -176,7 +176,29 @@ class Photos {
 		rename($file['tmp_name'], self::getMediaDir().$id);
 	}
 	
-	static function deletePhotos($ids, $userid) {
-		print_r($ids);
+	static function deletePhoto($id, $userid) {
+		$escapedid = Persistence::escape($id);
+		$tableprefix = $GLOBALS['tableprefix'];
+		$query = '
+			select '.$tableprefix.'media.'.$tableprefix.'media_id
+			from '.$tableprefix.'media
+			where '.$tableprefix.'media.'.$tableprefix.'media_id = '.$escapedid.'
+			and '.$tableprefix.'media.'.$tableprefix.'media_owner_users_id = '.Persistence::escape($userid).'
+			';
+		$photos = Persistence::query($query);
+		if (count($photos) < 1) {
+			return;
+		}
+		// Delete files
+		unlink(self::getMediaDir().$id.'.preview');
+		unlink(self::getMediaDir().$id.'.thumb');
+		unlink(self::getMediaDir().$id);
+		// Delete meta data
+		$deletequery = '
+			delete
+			from '.$tableprefix.'media
+			where '.$tableprefix.'media.'.$tableprefix.'media_id = '.$escapedid.'
+			';
+		Persistence::query($deletequery);
 	}
 }

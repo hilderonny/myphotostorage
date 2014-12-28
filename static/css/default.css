@@ -70,9 +70,9 @@ div.UploadProgress { border: 1px solid #B7B7B7;border-radius:5px;height:20px;mar
 div.UploadProgress > div { height:18px;width:0%;background:#FFAF02;border-radius: 4px; }
 
 div.Tools { position: fixed;left: 240px;top: 0;right: 20px;height: 60px;border-bottom: 1px solid #FFAF02;z-index: 1;padding-top: 19px;background-color:rgba(255,255,255,0.95);box-shadow:0px 0px 20px 10px #fff; }
-div.Tools > button.Delete { display:none;background: url(../img/delete.svg) no-repeat;float:left;border:none;cursor:pointer;width:40px;height:40px; }
+div.Tools > button.Delete { display:none;background: url(../img/delete.svg) no-repeat center center;float:left;border:none;cursor:pointer;width:40px;height:40px; }
 div.Tools > button.Select { float:right;display:block;border:none;color:#FFAF02;padding:11px;cursor:pointer;background:none; }
-div.Tools > button.Share { display:none;background: url(../img/share.svg) no-repeat;float:left;border:none;cursor:pointer;width:40px;height:40px; }
+div.Tools > button.Share { display:none;background: url(../img/share.svg) no-repeat center center;float:left;border:none;cursor:pointer;width:40px;height:40px; }
 div.Tools > div.ToolsZoom { float:left;position:relative;}
 div.Tools > div.ToolsZoom::before { position: absolute;top: 15px;left: 13px;content: "";background: url(../img/zoom.svg) no-repeat;width: 19px;height: 15px;background-size: 65%;}
 div.Tools > div.ToolsZoom::after { position: absolute;top: 12px;right: 6px;content: "";background: url(../img/zoom.svg) no-repeat;width: 19px;height: 15px;}
@@ -100,7 +100,7 @@ p.error { color:#800; background-color:#fcc;border-color:#800; }
 p.success { color:#080; background-color:#cfc;border-color:#080; }
 p.info { color:#008; background-color:#ccf;border-color:#008; }
 
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px)
+@media only screen and (max-device-width : 1024px)
 {
 	div.Menu { border:none;background:none;top:0;left:0;z-index:200; }
 	div.Menu > button { display:block;z-index:301;border:none;width:40px;height:40px;position:absolute;top:0;right:160px;background:url(../img/menu.svg) no-repeat;transition:right 0.5s; }
@@ -111,7 +111,7 @@ p.info { color:#008; background-color:#ccf;border-color:#008; }
 	div.Menu.Checked::after { right:0;background-color:rgba(0,0,0,0.5); }
 	div.Menu > div > div.MainMenu { border-top:1px solid #DFDFDF;margin-top:40px; }
 	div.Content { margin: 65px 0 0 0; }
-	div.Tools { left:0;right:0;height:42px;padding-top:0; }
+	div.Tools { left:0;right:0;height:42px;padding-top:0;padding-left:40px; }
 	div.Tools > div.ToolsZoom { display:none; }
 	div.PhotoList > div { padding-top:5px; }
 	div.PhotoList > div > label { margin:0 0 5px 0; }
