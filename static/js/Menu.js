@@ -26,14 +26,19 @@
  * Contains client side functions for handling menus.
  */
 Menu = {
-	
-	handleClick: function(button) {
-		if (button.isChecked) {
-			button.isChecked = false;
-			button.parentNode.classList.remove("Checked");
-		} else {
-			button.isChecked = true;
-			button.parentNode.classList.add("Checked");
-		}
-	}
+    /**
+     * Switches the CSS class of the menu button. Used in mobile
+     * display only to show or hide the menu.
+     * 
+     * @param {Node} button DOM node of the menu button
+     */
+    handleClick: function(button) {
+        if (button.isChecked) {
+            button.isChecked = false;
+            button.parentNode.classList.remove("Checked");
+        } else {
+            button.isChecked = true;
+            button.parentNode.classList.add("Checked");
+        }
+    }
 };

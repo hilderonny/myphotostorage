@@ -42,13 +42,20 @@ Account::requireValidUser();
         <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
         <script type="text/javascript">
+            // The photos list is loaded after showing the page via AJAX.
             window.addEventListener('load', function() {
                 Photos.getList('PhotoList', function(selectcount) {
                     var deletebutton = document.getElementById('DeleteButton');
                     deletebutton.style.display = selectcount > 0 ? 'block' : 'none';
                 });
             });
-
+            
+            /**
+             * Triggered when the user clicks on delete after selcting some
+             * files. Shows a confirm dialog and then starts the deletion
+             * process file after file. So the user can stop the deletion
+             * process when deleting many files.
+             */
             function handleDelete() {
                 var list = document.getElementById('PhotoList');
                 var onephototemplate = '<?php echo __('Do you really want to delete this photo?') ?>';

@@ -26,7 +26,16 @@
  * Contains client side functions for createing good looking dialogs
  */
 Dialog = {
-	
+    
+    /**
+     * Shows a confirm dialog with a message, a Yes and a No button. The
+     * callback function is called when the user clicks a button.
+     * 
+     * @param {String} question Question to show as message in the dialog.
+     * @param {function} callback Function which is called when the user quits
+     * the confirm dialog. The only parameter is boolean. When the user clicks
+     * on "Yes", the parameter is true, otherwise it is false.
+     */
     confirm : function(question, callback) {
         var dialog = document.createElement("div");
         dialog.classList.add("Dialog");
@@ -57,14 +66,36 @@ Dialog = {
         document.body.classList.add("DialogOpen");
     },
     
+    /**
+     * Shows a progress dialog with a progress bar and a cancel button.
+     * The cancelcallback function is called, when the user clicks on the
+     * cancel button. The dialog contains the function setProgress() for
+     * updating the progress and the function close() to close the dialog.
+     * 
+     * @param {string} message Message to be shown initially in the dialog.
+     * @param {function} cancelcallback Function is called when the user clicks
+     * on the cancel button.
+     * @returns {Element|Dialog.progress.dialog} The dialog itself is returned
+     * so that the caller has access to its setProgress() and close() functions.
+     */
     progress : function(message, cancelcallback) {
         var dialog = document.createElement("div");
         dialog.classList.add("Dialog");
         dialog.classList.add("Progress");
+        /**
+         * Updates the progress of the dialog.
+         * 
+         * @param {int} percent Percentage of the progress bar between 0 and
+         * 100.
+         * @param {string} message Message to show in the dialog.
+         */
         dialog.setProgress = function(percent, message) {
             this.progressdiv.style.width = percent + "%";
             this.messagediv.innerHTML = message;
         };
+        /**
+         * Closes the progress dialog.
+         */
         dialog.close = function() {
             document.body.removeChild(dialog);
             document.body.classList.remove("DialogOpen");

@@ -32,7 +32,6 @@ require_once '../code/App.php';
 // Require valid logged in user
 Account::requireValidUser();
 
-
 /**
  * TODO: Link hinzufügen, mit dem man die hochgeladenen Bilder gleich in ein Album packen kann.
  */
@@ -45,6 +44,14 @@ Account::requireValidUser();
         <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
         <script type="text/javascript">
+            /**
+             * Triggered, when the user selects files for upload. Hides the 
+             * select button in the toolbar and shows the cancel button.
+             * Also starts the upload process.
+             * 
+             * @param {Node} fileinput Hidden file input node which contains 
+             * the information about the files to upload.
+             */
             function handleSelection(fileinput) {
                 Photos.processUpload(fileinput, "ProgressCompletion", "UploadStatus", function() {
                     document.getElementById("ToolSelectFilesButton").style.display = "block";
@@ -53,7 +60,12 @@ Account::requireValidUser();
                 document.getElementById("ToolSelectFilesButton").style.display = "none";
                 document.getElementById("ToolCancelButton").style.display = "block";
             }
-
+            
+            /**
+             * Triggered when the user clicks the cancel button while an upload
+             * is in progress. Stops the upload progress after the currently
+             * uploading file.
+             */
             function handleCancel() {
                 Photos.cancelUpload();
                 document.getElementById("ToolSelectFilesButton").style.display = "block";
