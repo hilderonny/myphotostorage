@@ -64,6 +64,10 @@ Photos = {
      * 
      * @param {string} listNodeId ID of the DOM element where to put the photos
      * list into.
+	 * @param {function} selectListener Function is called when the number of
+	 * selected elements changes. The only parameter is the number of currently
+	 * selected elements. Useful for menu buttons which are only available when
+	 * at least one photo is selected.
      */
     getList : function(listNodeId, selectListener) {
         var self = this;
@@ -107,7 +111,7 @@ Photos = {
                             }
                             selectListener(self.listNode.selectedImageCount);
                         } else {
-                            window.open("images.php?type=preview&id=" + this.photoId);
+							self.showPreview(this);
                         }
                     });
                     image.src = "images.php?type=thumb&id=" + id;
@@ -272,7 +276,7 @@ Photos = {
         var doDeleteRequest = function(imagenodes) {
             if (self.canceldeletion || imagenodes.length < 1) {
                 self.progressdialog.close();
-                completioncallback(!self.canceldeletion && imagenodes.length > 0);
+                completioncallback(!self.canceldeletion && imagenodes.length < 1);
                 return;
             }
             var processedfilecount = self.filecount - imagenodes.length;
@@ -302,5 +306,70 @@ Photos = {
             self.canceldeletion = true;
         });
         doDeleteRequest(imagenodes);
-    }
+    },
+	/**
+	 * Shows a fullscreen preview of an image with a given ID.
+	 * Contains a close button which closes the preview on click.
+	 * Also contains two pr buttons to switch to previous and next
+	 * images in the list without leaving the preview mode.
+	 * 
+	 * @param {Node} thumbimagenode DOM node of the thumb image where the user
+	 * clicked on.
+	 */
+	showPreview : function(thumbimagenode) {
+		var self = this;
+		self.thumbimagenode = thumbimagenode;
+		self.previewresizehandler = function() {
+			self.previewcontainer.style.height = window.innerHeight + "px";
+		};
+		window.addEventListener("resize", self.previewresizehandler);
+		self.previewcontainer = document.createElement("div");
+		self.previewcontainer.classList.add("PhotoPreview");
+		self.previewcontainer.style.height = window.innerHeight + "px";
+		document.body.appendChild(self.previewcontainer);
+		self.previewimage = document.createElement("img");
+		self.previewimage.src = "images.php?type=preview&id=" + self.thumbimagenode.photoId;
+		self.previewcontainer.appendChild(self.previewimage);
+		var closebutton = document.createElement("button");
+		closebutton.classList.add("Close");
+		closebutton.addEventListener("click", function() {
+			document.body.removeChild(self.previewcontainer);
+			document.body.classList.remove("PhotoPreview");
+			window.removeEventListener("resize", self.previewresizehandler);
+		});
+		self.previewcontainer.appendChild(closebutton);
+		var previousbutton = document.createElement("button");
+		previousbutton.classList.add("Previous");
+		previousbutton.addEventListener("click", function() {
+			var listnode = self.thumbimagenode.parentNode;
+			var previouslistnode = null;
+			if (listnode.previousSibling === null) {
+				var previousmonthnode = listnode.parentNode.parentNode.previousSibling !== null ? listnode.parentNode.parentNode.previousSibling : listnode.parentNode.parentNode.parentNode.lastChild;
+				previouslistnode = previousmonthnode.lastChild.lastChild;
+			} else {
+				previouslistnode = listnode.previousSibling;
+			}
+			var previousthumbimagenode = previouslistnode.firstChild;
+			self.previewimage.src = "images.php?type=preview&id=" + previousthumbimagenode.photoId;
+			self.thumbimagenode = previousthumbimagenode;
+		});
+		self.previewcontainer.appendChild(previousbutton);
+		var nextbutton = document.createElement("button");
+		nextbutton.classList.add("Next");
+		nextbutton.addEventListener("click", function() {
+			var listnode = self.thumbimagenode.parentNode;
+			var nextlistnode = null;
+			if (listnode.nextSibling === null) {
+				var nextmonthnode = listnode.parentNode.parentNode.nextSibling !== null ? listnode.parentNode.parentNode.nextSibling : listnode.parentNode.parentNode.parentNode.firstChild;
+				nextlistnode = nextmonthnode.lastChild.firstChild;
+			} else {
+				nextlistnode = listnode.nextSibling;
+			}
+			var nextthumbimagenode = nextlistnode.firstChild;
+			self.previewimage.src = "images.php?type=preview&id=" + nextthumbimagenode.photoId;
+			self.thumbimagenode = nextthumbimagenode;
+		});
+		self.previewcontainer.appendChild(nextbutton);
+		document.body.classList.add("PhotoPreview");
+	}
 };

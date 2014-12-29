@@ -97,7 +97,7 @@ Dialog = {
          * Closes the progress dialog.
          */
         dialog.close = function() {
-            document.body.removeChild(dialog);
+            document.body.removeChild(this);
             document.body.classList.remove("DialogOpen");
         };
         dialog.messagediv = document.createElement("div");
