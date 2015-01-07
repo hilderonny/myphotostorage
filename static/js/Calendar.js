@@ -39,16 +39,42 @@ Calendar = {
 		self.upperdiv.setAttribute("style", " background: #ddd url(https://www.avorium.de/myphotostorage/photos/images.php?type=preview&id=141) no-repeat; background-size: 100%; ");
 		self.upperdiv.posX = 0;
 		self.upperdiv.posY = 0;
-		self.upperdiv.addEventListener("touchstart", function() {
-			self.touchcount++;
-		}, false);
-		self.upperdiv.addEventListener("touchend", function() {
-			self.touchcount--;
+		self.upperdiv.addEventListener("touchstart", function(e) {
+			if(e.touches.length === 1) {
+				self.upperdiv.movestartposx = self.upperdiv.posX;
+				self.upperdiv.movestartposy = self.upperdiv.posY;
+				self.upperdiv.touch1startx = e.touches[0].pageX;
+				console.log(e.touches[0]);
+				self.upperdiv.touch1starty = e.touches[0].pageY;
+				self.touchmode = 'move';
+			} else if(e.touches.length === 2) {
+				self.upperdiv.touch2startx = e.touches[1].pageX;
+				self.upperdiv.touch2starty = e.touches[1].pageY;
+				self.currentTouchZoomFactor = self.currentZoomFactor;
+				self.touchmode = 'scale';
+			}
 		}, false);
 		self.upperdiv.addEventListener("touchmove", function(e) {
-			if (e.touches.length > 1) {
-				var diff = e.touches[0].pageX - e.touches[1].pageX;
-				self.zoomBackground(1.01);
+			if (e.touches.length === 1 && self.touchmode === 'move') {
+				var diffx = e.touches[0].pageX - self.upperdiv.touch1startx;
+				var diffy = e.touches[0].pageY - self.upperdiv.touch1starty;
+				self.upperdiv.posX = self.upperdiv.movestartposx + diffx;
+				self.upperdiv.posY = self.upperdiv.movestartposy + diffy;
+				console.log(self.upperdiv.movestartposx, self.upperdiv.movestartposy);
+				self.upperdiv.style.backgroundPosition = self.upperdiv.posX + "px " + self.upperdiv.posY + "px";
+			} else if (e.touches.length === 2) {
+				var olddiffx = self.upperdiv.touch2startx - self.upperdiv.touch1startx;
+				var olddiffy = self.upperdiv.touch2starty - self.upperdiv.touch1starty;
+				var olddiff = Math.sqrt(olddiffx * olddiffx + olddiffy * olddiffy);
+				var newdiffx = e.touches[0].pageX - e.touches[1].pageX;
+				var newdiffy = e.touches[0].pageY - e.touches[1].pageY;
+				var newdiff = Math.sqrt(newdiffx * newdiffx + newdiffy * newdiffy);
+				var factor = self.currentTouchZoomFactor * Math.abs(newdiff / olddiff);
+				var rect = self.upperdiv.getBoundingClientRect();
+				var centerx = (e.touches[0].pageX + e.touches[1].pageX - 2 * rect.left) / 2;
+				var centery = (e.touches[0].pageY + e.touches[1].pageY - 2 * rect.top) / 2;
+				console.log();
+				self.zoomBackground(factor, centerx, centery);
 			}
 		}, false);
 		self.upperdiv.addEventListener("mousewheel", function(e) {
@@ -87,19 +113,13 @@ Calendar = {
 		var self = this;
 		var oldfactor = self.currentZoomFactor;
 		self.currentZoomFactor = factor;
-		if (self.currentZoomFactor < 1) {
-			self.currentZoomFactor = 1;
-		}
-		else if (self.currentZoomFactor > 100) {
-			self.currentZoomFactor = 100;
-		}
 		self.upperdiv.style.backgroundSize = (self.currentZoomFactor * 100) + "%";
 		var f = self.currentZoomFactor / oldfactor;
-		var newx = f * self.upperdiv.posX + f * pointerx - pointerx;
-		var newy = f * self.upperdiv.posY + f * pointery - pointery;
+		var newx = f * self.upperdiv.posX - f * pointerx + pointerx;
+		var newy = f * self.upperdiv.posY - f * pointery + pointery;
 		self.upperdiv.posX = newx;
 		self.upperdiv.posY = newy;
-		self.upperdiv.style.backgroundPosition = (-newx | 0) + "px " + (-newy | 0) + "px";
+		self.upperdiv.style.backgroundPosition = (newx | 0) + "px " + (newy | 0) + "px";
 	},
 	handleResize : function() {
 		var self = this;
