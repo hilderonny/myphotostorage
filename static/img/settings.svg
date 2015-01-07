@@ -26,5 +26,22 @@ THE SOFTWARE.
 	<style type="text/css"><![CDATA[
 		* { stroke-width:1;stroke:#FFAF02;fill:none; }
 	]]></style>
-	<path d="M 3.5,3.5 L 2,5 L 12.5,15.5 L 2,26 L 5,29 L 15.5,18.5 L 26,29 L 29,26 L 18.5,15.5 L 29,5 L 26,2 L 15.5,12.5 L 5,2 L 3.5,3.5" />
+	<defs>
+		<path id="Line" d="M 15.5,0 L 15.5 5" />
+	</defs>
+	<circle cx="15.5" cy="15.5" r="15" stroke-dasharray="7.854" />
+	<circle cx="15.5" cy="15.5" r="11" stroke-dasharray="5.760" transform="rotate(-90,15.5,15.5)" />
+	<use xlink:href="#Line" />
+	<use xlink:href="#Line" transform="rotate(30,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(60,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(90,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(120,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(150,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(180,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(210,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(240,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(270,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(300,15.5,15.5)" />
+	<use xlink:href="#Line" transform="rotate(330,15.5,15.5)" />
+	<circle cx="15.5" cy="15.5" r="5" />
 </svg>
