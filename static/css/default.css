@@ -45,6 +45,15 @@ div.Dialog.Confirm > button.OK { margin: 0 4px 10px 45px; }
 div.Dialog.Confirm > button.Cancel { margin: 0 45px 10px 4px; }
 div.Dialog.Progress > div.UploadProgress { margin:20px 10px; }
 div.Dialog.Progress > button.Cancel  { margin:0 100px 10px 100px; }
+div.Dialog.Select { width: inherit;left: 5px;right: 5px;margin: inherit;top: 5px;bottom: 5px; }
+div.Dialog.Select > button { display: block;border: none;color: #FFAF02;padding: 11px;cursor: pointer;background: none;border-radius:none;font-weight:inherit;text-shadow:none;box-shadow:none;width:inherit; }
+div.Dialog.Select > button.Done { float: right; }
+div.Dialog.Select > div.DialogContent { overflow: auto;top: 42px;bottom:0;position: absolute;left: 0;right: 0;padding:2px;border-top: 1px solid #FFAF02; }
+div.Dialog.Select > div.DialogContent > div { float: left;width: 25%;position:relative; }
+div.Dialog.Select > div.DialogContent > div:after { pointer-events:none;content: "";display: block;border:1px solid transparent;cursor:pointer;right: 0;bottom: 0;position: absolute;top: 0;left: 0;}
+div.Dialog.Select > div.DialogContent > div.Selected:after { background: rgba(255,175,2,0.3) url(../img/okay.svg) no-repeat left bottom;border-color:#FFAF02; }
+div.Dialog.Select > div.DialogContent > div:last-of-type::after { content:'';clear:both;display:block; }
+div.Dialog.Select > div.DialogContent > div > img { display: block;width: 100%;height: 100%;margin: 0; }
 
 div.Menu { position:fixed;top:20px;left:20px;width:200px;border:1px solid #B7B7B7; }
 div.Menu > button { display:none; }
@@ -113,9 +122,21 @@ form.Simple input[type="submit"] { background: #ffaf02;color: #fff;border: 1px s
 html.CalendarPage div.Tools { box-shadow:none; }
 html.CalendarPage div.Content { position:absolute;top:0;bottom:0;left:0;right:0; }
 html.CalendarPage div.Content > div.Calendar { position:relative;margin:auto; }
+html.CalendarPage div.Content > div.Calendar > button.Previous { cursor:pointer;position: absolute;background: url(../img/previous-photo.svg) no-repeat center center;height: 10%;width: 10%;border: none;background-size: 100%;top: 50%;margin-top: -4%;left: 0; }
+html.CalendarPage div.Content > div.Calendar > button.Next { cursor:pointer;position: absolute;background: url(../img/next-photo.svg) no-repeat center center;height: 10%;width: 10%;border: none;background-size: 100%;top: 50%;margin-top: -4%;right: 0; }
+html.CalendarPage div.Content > div.Calendar > button.Select { background: url(../img/select-photo.svg) no-repeat center center;width: 10%;height: 10%;border: none;cursor: pointer;position: absolute;top: 50%;left: 50%;margin: -9% 0 0 -5%; }
 html.CalendarPage div.Content > div.Calendar > img { position:absolute;top:0;left:0;width:100%;pointer-events: none; }
-html.CalendarPage div.Content > div.Calendar > div.Upper { border:solid #DFDFDF;border-width:1px 1px 0 1px;height:50%;background:#DDDDDD no-repeat; }
-html.CalendarPage div.Content > div.Calendar > div.Lower { border:solid #DFDFDF;border-width:0 1px 1px 1px;height:50%;background:#FFFFFF; }
+html.CalendarPage div.Content > div.Calendar > div.Lower { padding:3% 8%;border:solid #DFDFDF;border-width:0 1px 1px 1px;height:50%;background:#FFFFFF; }
+html.CalendarPage div.Content > div.Calendar > div.Lower > div.Month { padding-bottom:3%;text-align: center;font-weight:bold; }
+html.CalendarPage div.Content > div.Calendar > div.Lower > table { width:100%;height:87%;border-collapse: collapse;table-layout: fixed; }
+html.CalendarPage div.Content > div.Calendar > div.Lower > table > tbody > tr { vertical-align: top; }
+html.CalendarPage div.Content > div.Calendar > div.Lower > table > tbody > tr > td { padding:0.5%; border:1px solid #DFDFDF; height:16.66% }
+html.CalendarPage div.Content > div.Calendar > div.Lower > table > tbody > tr > td:last-of-type { color:#D73E44; }
+html.CalendarPage div.Content > div.Calendar > div.Lower > table > thead > tr > th { font-weight:bold;text-align:center;padding:0.5%; }
+html.CalendarPage div.Content > div.Calendar > div.Upper { border:solid #DFDFDF;border-width:1px 1px 0 1px;height:50%;background:#DDDDDD no-repeat;position:relative; }
+html.CalendarPage div.Content > div.Calendar.Cover > div.Upper { height:100%; }
+html.CalendarPage div.Content > div.Calendar.Cover > div.Lower { display:none; }
+html.CalendarPage div.Content > div.Calendar.Cover > button.Select { bottom: 0%;margin: 0 0 0 -5%;top: inherit; }
 
 p.notification { border:1px solid #888;background-color:#ccc;color:#888;padding:3px; }
 p.error { color:#800; background-color:#fcc;border-color:#800; }
@@ -155,4 +176,9 @@ p.info { color:#008; background-color:#ccf;border-color:#008; }
 	form.Simple input[type="submit"] { margin:inherit; }
 
 	html.CalendarPage div.Content { margin:45px 2px 2px 2px; }
+}
+
+@media only screen and (max-width : 1024px) and (orientation : landscape) {
+	html.CalendarPage div.Tools {width: 42px;padding-top: 42px;border-bottom: none;border-right: 1px solid #FFAF02;height: 100%;}
+	html.CalendarPage div.Content { margin: 2px 2px 2px 45px; }
 }

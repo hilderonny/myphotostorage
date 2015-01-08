@@ -45,7 +45,7 @@ if ($photo === null) {
 	header("HTTP/1.0 404 Not Found");
 	exit;
 }
-$thumbnailfile = Photos::getMediaDir().$id.'.'.$type;
+$thumbnailfile = Photos::getMediaDir().$id.($type ? '.'.$type : '');
 header('Content-Type: '.$photo[$tableprefix.'media_mimetype']);
 header('Content-Length: '.filesize($thumbnailfile));
 $handle = fopen($thumbnailfile, 'rb');

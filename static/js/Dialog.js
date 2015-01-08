@@ -44,15 +44,15 @@ Dialog = {
         message.classList.add("Message");
         message.innerHTML = question;
         dialog.appendChild(message);
-        var okbutton = document.createElement("button");
-        okbutton.classList.add("OK");
-        okbutton.addEventListener("click", function() {
+        var donebutton = document.createElement("button");
+        donebutton.classList.add("OK");
+        donebutton.addEventListener("click", function() {
             document.body.removeChild(dialog);
             document.body.classList.remove("DialogOpen");
             callback(true);
         });
-        okbutton.innerHTML = '++##Yes##--';
-        dialog.appendChild(okbutton);
+        donebutton.innerHTML = '++##Yes##--';
+        dialog.appendChild(donebutton);
         var cancelbutton = document.createElement("button");
         cancelbutton.classList.add("Cancel");
         cancelbutton.addEventListener("click", function() {
@@ -65,7 +65,6 @@ Dialog = {
         document.body.appendChild(dialog);
         document.body.classList.add("DialogOpen");
     },
-    
     /**
      * Shows a progress dialog with a progress bar and a cancel button.
      * The cancelcallback function is called, when the user clicks on the
@@ -122,6 +121,43 @@ Dialog = {
         document.body.appendChild(dialog);
         document.body.classList.add("DialogOpen");
         return dialog;
+    },
+	/**
+	 * Opens a modal dialog for selecting something. Shows two buttons "Cancel" 
+	 * and "Select".
+	 * 
+	 * @param {object} content Content DOM node to insert.
+	 * @param {function} doneCallback Callback to be called ahen the dialog
+	 * was closed with Done
+	 * @param {function} cancelCallback Callback to be called ahen the dialog
+	 * was closed with Cancel
+	 */
+    select : function(content, doneCallback, cancelCallback) {
+        var dialog = document.createElement("div");
+        dialog.classList.add("Dialog");
+        dialog.classList.add("Select");
+        content.classList.add("DialogContent");
+        dialog.appendChild(content);
+        var donebutton = document.createElement("button");
+        donebutton.classList.add("Done");
+        donebutton.addEventListener("click", function() {
+            document.body.removeChild(dialog);
+            document.body.classList.remove("DialogOpen");
+            doneCallback();
+        });
+        donebutton.innerHTML = '++##Done##--';
+        dialog.appendChild(donebutton);
+        var cancelbutton = document.createElement("button");
+        cancelbutton.classList.add("Cancel");
+        cancelbutton.addEventListener("click", function() {
+            document.body.removeChild(dialog);
+            document.body.classList.remove("DialogOpen");
+            cancelCallback();
+        });
+        cancelbutton.innerHTML = '++##Cancel##--';
+        dialog.appendChild(cancelbutton);
+        document.body.appendChild(dialog);
+        document.body.classList.add("DialogOpen");
     }
 
 };

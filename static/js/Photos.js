@@ -371,5 +371,40 @@ Photos = {
 		});
 		self.previewcontainer.appendChild(nextbutton);
 		document.body.classList.add("PhotoPreview");
-	}
+	},
+    selectPhoto : function(selectListener) {
+		var self = this;
+		self.selectedImage = null;
+        this.doRequest("getPhotoList", null, function(response) {
+			var content = document.createElement("div");
+            var photoIdsList = JSON.parse(response);
+            for (var yearmonth in photoIdsList) {
+                for (var i = 0; i < photoIdsList[yearmonth].length; i++) {
+                    var id = photoIdsList[yearmonth][i];
+                    var container = document.createElement("div");
+                    var image = document.createElement("img");
+                    image.photoId = id;
+                    image.addEventListener("click", function() {
+						if (self.selectedImage) {
+							self.selectedImage.parentNode.classList.remove("Selected");
+						}
+						if (self.selectedImage !== this) {
+							this.parentNode.classList.add("Selected");
+							self.selectedImage = this;
+						} else {
+							self.selectedImage = null;
+						}
+                    });
+                    image.src = "images.php?type=thumb&id=" + id;
+                    container.appendChild(image);
+                    content.appendChild(container);
+                }
+            }
+			Dialog.select(content, function() {
+				selectListener(self.selectedImage ? self.selectedImage.photoId : null);
+			}, function() {
+				selectListener(false);
+			});
+        });
+    }
 };

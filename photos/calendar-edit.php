@@ -28,7 +28,7 @@
  * This page is for editing calendars.
  */
 
-require_once '../../code/App.php';
+require_once '../code/App.php';
 // Require valid logged in user
 Account::requireValidUser();
 

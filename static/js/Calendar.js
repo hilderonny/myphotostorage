@@ -43,7 +43,25 @@ Calendar = {
 			});
 		}
 		this.year = new Date().getFullYear();
-		this.currentmonth = 1; // 0 means that the cover is selected, else the month starting with 1 is selected
+		this.currentmonth = 0; // 0 means that the cover is selected, else the month starting with 1 is selected
+	},
+	showCurrentMonth : function() {
+		if (this.currentmonth > 0) {
+			var monthnames = ["++##January##--", "++##February##--", "++##March##--", "++##April##--", "++##May##--", "++##June##--", "++##July##--", "++##August##--", "++##September##--", "++##October##--", "++##November##--", "++##December##--" ];
+			this.monthnamediv.innerHTML = monthnames[this.currentmonth - 1];
+			var daysinmonth = new Date(this.year, this.currentmonth, 0).getDate();
+			var offset = (new Date(this.year, this.currentmonth - 1, 1).getDay() + 6) % 7;
+			var tds = this.monthtbody.getElementsByTagName("td");
+			for (var i = 0; i < tds.length; i++) {
+				tds[i].innerHTML = (i >= offset && i < daysinmonth + offset) ? i - offset + 1 : "";
+			}			
+			this.calendardiv.classList.remove("Cover");
+		} else {
+			this.calendardiv.classList.add("Cover");
+		}
+		this.previousbutton.style.display = this.currentmonth > 0 ? "inherit" : "none";
+		this.nextbutton.style.display = this.currentmonth < 12 ? "inherit" : "none";
+		this.showCurrentMonthImage();
 	},
 	/**
 	 * Shows the image of the currently selected month in the placeholder and
@@ -51,7 +69,7 @@ Calendar = {
 	 */
 	showCurrentMonthImage : function() {
 		var image = this.months[this.currentmonth].image;
-		this.upperdiv.style.backgroundImage = image.id === null ? "none" : "url(../../photos/images.php?type=preview&id=" + image.id + ")";
+		this.upperdiv.style.backgroundImage = image.id === null ? "none" : "url(images.php?type=preview&id=" + image.id + ")";
 		this.updateImage();
 	},
 	/**
@@ -131,15 +149,69 @@ Calendar = {
 			}
 		}, false);
 		self.calendardiv.appendChild(self.upperdiv);
+		self.ringsimg = document.createElement("img");
+		self.ringsimg.src = "../static/img/calendar/a4-rings.svg";
+		self.calendardiv.appendChild(self.ringsimg);
+		var selectbutton = document.createElement("button");
+		selectbutton.classList.add("Select");
+		selectbutton.addEventListener("click", function() {
+			Photos.selectPhoto(function(id) {
+				if (id !== false) {
+					var currentimage = self.months[self.currentmonth].image;
+					currentimage.id = id;
+					currentimage.x = 0;
+					currentimage.y = 0;
+					currentimage.scale = 1;
+					self.showCurrentMonthImage();
+				}
+			});
+		});
+		self.calendardiv.appendChild(selectbutton);
 		var lowerdiv = document.createElement("div");
 		lowerdiv.classList.add("Lower");
 		self.calendardiv.appendChild(lowerdiv);
-		self.ringsimg = document.createElement("img");
-		self.ringsimg.src = "../../static/img/calendar/a4-rings.svg";
-		self.calendardiv.appendChild(self.ringsimg);
+		self.monthnamediv = document.createElement("div");
+		self.monthnamediv.classList.add("Month");
+		lowerdiv.appendChild(self.monthnamediv);
+		var table = document.createElement("table");
+		lowerdiv.appendChild(table);
+		self.monththead = document.createElement("thead");
+		table.appendChild(self.monththead);
+		var trh = document.createElement("tr");
+		self.monththead.appendChild(trh);
+		var daynames = ["++##Monday##--", "++##Tuesday##--", "++##Wednesday##--", "++##Thursday##--", "++##Friday##--", "++##Saturday##--", "++##Sunday##--"];
+		for (var i = 0; i < 7; i++) {
+			var th = document.createElement("th");
+			trh.appendChild(th);
+			th.innerHTML = daynames[i];
+		}
+		self.monthtbody = document.createElement("tbody");
+		table.appendChild(self.monthtbody);
+		for (var i = 0; i < 6; i++) {
+			var trb = document.createElement("tr");
+			self.monthtbody.appendChild(trb);
+			for (var j = 0; j < 7; j++) {
+				var td = document.createElement("td");
+				trb.appendChild(td);
+			}
+		}
+		self.previousbutton = document.createElement("button");
+		self.previousbutton.classList.add("Previous");
+		self.previousbutton.addEventListener("click", function() {
+			self.currentmonth--;
+			self.showCurrentMonth();
+		});
+		self.calendardiv.appendChild(self.previousbutton);
+		self.nextbutton = document.createElement("button");
+		self.nextbutton.classList.add("Next");
+		self.nextbutton.addEventListener("click", function() {
+			self.currentmonth++;
+			self.showCurrentMonth();
+		});
+		self.calendardiv.appendChild(self.nextbutton);
 		window.addEventListener("resize", function() { self.handleResize(); });
 		self.handleResize();
-		self.showCurrentMonthImage();
+		self.showCurrentMonth();
 	},
 	/**
 	 * Moves the image depending on the given X and Y differences. The given
@@ -199,8 +271,17 @@ Calendar = {
 			self.calendardiv.style.width = ((contentheight / ratiowithrings) | 0) + "px";
 			self.calendardiv.style.height = contentheight + "px";
 		}
-		var topmargin = (self.calendardiv.offsetWidth / 21) | 0;
-		self.calendardiv.style.paddingTop = topmargin + "px";
+		var calendarwidth = self.calendardiv.offsetWidth;
+		self.calendardiv.style.paddingTop = (calendarwidth / 21) + "px";
+		self.monthnamediv.style.fontSize = (calendarwidth * 0.04) + "px";
+		var ths = self.monththead.getElementsByTagName("th");
+		for (var i = 0; i < ths.length; i++) {
+			ths[i].style.fontSize = (calendarwidth * 0.02) + "px";
+		}
+		var tds = self.monthtbody.getElementsByTagName("td");
+		for (var i = 0; i < tds.length; i++) {
+			tds[i].style.fontSize = (calendarwidth * 0.015) + "px";
+		}
 		self.updateImage();
 	}
 };
