@@ -23,80 +23,111 @@
  */
 
 /**
- * Contains client side functions for handling calendars. Designed as class Calendar
+ * Contains client side functions for handling calendars.
+ * Designed as class Calendar.
  */
 Calendar = {
-	renderCalendarPage : function(contentdivid, year, month) {
+	/**
+	 * Initializes the calendar with new empty data and the year set to the 
+	 * current year. Used when making a new calendar.
+	 */
+	init : function() {
+		this.months = [];
+		for (var i = 0; i < 13; i++) { // In 0 is the cover image
+			this.months.push({
+				image : { // TODO: Initialize id with null
+					id : 141, // ID of the image to show
+					x : 0, // X-Distance of the center of the image to the center of the placeholder relative to the placeholder width (-0.5 means that the center of the image is on the left border of the placeholder)
+					y : 0, // Y-Distance of the center of the image to the center of the placeholder relative to the placeholder width (yes, not relative to the height!)
+					scale : 1 } // Scale factor of the image relative to the placeholder width, 1 = the image has the width of the placeholder
+			});
+		}
+		this.year = new Date().getFullYear();
+		this.currentmonth = 1; // 0 means that the cover is selected, else the month starting with 1 is selected
+	},
+	/**
+	 * Shows the image of the currently selected month in the placeholder and
+	 * updates it position and scale.
+	 */
+	showCurrentMonthImage : function() {
+		var image = this.months[this.currentmonth].image;
+		this.upperdiv.style.backgroundImage = image.id === null ? "none" : "url(../../photos/images.php?type=preview&id=" + image.id + ")";
+		this.updateImage();
+	},
+	/**
+	 * Updates the display of the current month image depending on the settings
+	 * in the image model.
+	 */
+	updateImage : function() {
+		var currentimage = this.months[this.currentmonth].image;
+		this.upperdiv.style.backgroundSize = (currentimage.scale * 100) + "%";
+		var pbounds = this.upperdiv.getBoundingClientRect();
+		var pw = pbounds.width;
+		var is = currentimage.scale;
+		var icpx = currentimage.x;
+		var ix = pw * ( icpx + (1 - is) / 2 );
+		var icpy = currentimage.y;
+		var iy = pw * ( icpy + (1 - is) / 2 );
+		this.upperdiv.style.backgroundPosition = ix + "px " + iy + "px";
+	},
+	/**
+	 * Creates a DOM structure for the current calendar within the Node with
+	 * the given ID.
+	 * 
+	 * @param {string} contentdivid ID of the node where to put the calendar into.
+	 */
+	renderCalendarPage : function(contentdivid) {
 		var self = this;
-		self.currentZoomFactor = 1;
-		self.touchcount = 0;
 		self.contentdiv = document.getElementById(contentdivid);
 		self.calendardiv = document.createElement("div");
 		self.calendardiv.classList.add("Calendar");
 		self.contentdiv.appendChild(self.calendardiv);
 		self.upperdiv = document.createElement("div");
 		self.upperdiv.classList.add("Upper");
-		self.upperdiv.setAttribute("style", " background: #ddd url(https://www.avorium.de/myphotostorage/photos/images.php?type=preview&id=141) no-repeat; background-size: 100%; ");
-		self.upperdiv.posX = 0;
-		self.upperdiv.posY = 0;
+		self.upperdiv.addEventListener("mousewheel", function(e) {
+			self.scaleAt(e.offsetX, e.offsetY, self.months[self.currentmonth].image.scale * (e.wheelDelta > 0 ? 1.02 : 0.98));
+		}, false);
+		self.upperdiv.addEventListener("mousedown", function(e) {
+			this.movestartx = e.offsetX;
+			this.movestarty = e.offsetY;
+		}, false);
+		self.upperdiv.addEventListener("mousemove", function(e) {
+			if (e.which === 1) {
+				self.move(e.offsetX - this.movestartx, e.offsetY - this.movestarty);
+				this.movestartx = e.offsetX;
+				this.movestarty = e.offsetY;
+			}
+		}, false);
+
 		self.upperdiv.addEventListener("touchstart", function(e) {
 			if(e.touches.length === 1) {
-				self.upperdiv.movestartposx = self.upperdiv.posX;
-				self.upperdiv.movestartposy = self.upperdiv.posY;
-				self.upperdiv.touch1startx = e.touches[0].pageX;
-				console.log(e.touches[0]);
-				self.upperdiv.touch1starty = e.touches[0].pageY;
-				self.touchmode = 'move';
+				this.touch1startx = e.touches[0].pageX;
+				this.touch1starty = e.touches[0].pageY;
+				this.touchmode = 'move';
 			} else if(e.touches.length === 2) {
-				self.upperdiv.touch2startx = e.touches[1].pageX;
-				self.upperdiv.touch2starty = e.touches[1].pageY;
-				self.currentTouchZoomFactor = self.currentZoomFactor;
-				self.touchmode = 'scale';
+				this.touch2startx = e.touches[1].pageX;
+				this.touch2starty = e.touches[1].pageY;
+				this.currentscale = self.months[self.currentmonth].image.scale;
+				this.touchmode = 'scale';
 			}
 		}, false);
 		self.upperdiv.addEventListener("touchmove", function(e) {
-			if (e.touches.length === 1 && self.touchmode === 'move') {
-				var diffx = e.touches[0].pageX - self.upperdiv.touch1startx;
-				var diffy = e.touches[0].pageY - self.upperdiv.touch1starty;
-				self.upperdiv.posX = self.upperdiv.movestartposx + diffx;
-				self.upperdiv.posY = self.upperdiv.movestartposy + diffy;
-				console.log(self.upperdiv.movestartposx, self.upperdiv.movestartposy);
-				self.upperdiv.style.backgroundPosition = self.upperdiv.posX + "px " + self.upperdiv.posY + "px";
+			if (e.touches.length === 1 && this.touchmode === 'move') {
+				self.move(e.touches[0].pageX - this.touch1startx, e.touches[0].pageY - this.touch1starty);
+				this.touch1startx = e.touches[0].pageX;
+				this.touch1starty = e.touches[0].pageY;
 			} else if (e.touches.length === 2) {
-				var olddiffx = self.upperdiv.touch2startx - self.upperdiv.touch1startx;
-				var olddiffy = self.upperdiv.touch2starty - self.upperdiv.touch1starty;
+				var olddiffx = this.touch2startx - this.touch1startx;
+				var olddiffy = this.touch2starty - this.touch1starty;
 				var olddiff = Math.sqrt(olddiffx * olddiffx + olddiffy * olddiffy);
 				var newdiffx = e.touches[0].pageX - e.touches[1].pageX;
 				var newdiffy = e.touches[0].pageY - e.touches[1].pageY;
 				var newdiff = Math.sqrt(newdiffx * newdiffx + newdiffy * newdiffy);
-				var factor = self.currentTouchZoomFactor * Math.abs(newdiff / olddiff);
-				var rect = self.upperdiv.getBoundingClientRect();
+				var factor = this.currentscale * Math.abs(newdiff / olddiff);
+				var rect = this.getBoundingClientRect();
 				var centerx = (e.touches[0].pageX + e.touches[1].pageX - 2 * rect.left) / 2;
 				var centery = (e.touches[0].pageY + e.touches[1].pageY - 2 * rect.top) / 2;
-				console.log();
-				self.zoomBackground(factor, centerx, centery);
-			}
-		}, false);
-		self.upperdiv.addEventListener("mousewheel", function(e) {
-			self.zoomBackground(self.currentZoomFactor * (e.wheelDelta > 0 ? 1.02 : 0.98), e.offsetX, e.offsetY);
-		}, false);
-		self.upperdiv.addEventListener("mousedown", function(e) {
-			self.upperdiv.movestartpointerx = e.offsetX;
-			self.upperdiv.movestartpointery = e.offsetY;
-			self.upperdiv.movestartposx = self.upperdiv.posX;
-			self.upperdiv.movestartposy = self.upperdiv.posY;
-			self.upperdiv.ismoving = true;
-		}, false);
-		self.upperdiv.addEventListener("mouseup", function() {
-			self.upperdiv.ismoving = false;
-		}, false);
-		self.upperdiv.addEventListener("mousemove", function(e) {
-			if (self.upperdiv.ismoving) {
-				var diffx = e.offsetX - self.upperdiv.movestartpointerx;
-				var diffy = e.offsetY - self.upperdiv.movestartpointery;
-				self.upperdiv.posX = self.upperdiv.movestartposx + diffx;
-				self.upperdiv.posY = self.upperdiv.movestartposy + diffy;
-				self.upperdiv.style.backgroundPosition = self.upperdiv.posX + "px " + self.upperdiv.posY + "px";
+				self.scaleAt(centerx, centery, factor);
 			}
 		}, false);
 		self.calendardiv.appendChild(self.upperdiv);
@@ -108,19 +139,54 @@ Calendar = {
 		self.calendardiv.appendChild(self.ringsimg);
 		window.addEventListener("resize", function() { self.handleResize(); });
 		self.handleResize();
+		self.showCurrentMonthImage();
 	},
-	zoomBackground : function(factor, pointerx, pointery) {
-		var self = this;
-		var oldfactor = self.currentZoomFactor;
-		self.currentZoomFactor = factor;
-		self.upperdiv.style.backgroundSize = (self.currentZoomFactor * 100) + "%";
-		var f = self.currentZoomFactor / oldfactor;
-		var newx = f * self.upperdiv.posX - f * pointerx + pointerx;
-		var newy = f * self.upperdiv.posY - f * pointery + pointery;
-		self.upperdiv.posX = newx;
-		self.upperdiv.posY = newy;
-		self.upperdiv.style.backgroundPosition = (newx | 0) + "px " + (newy | 0) + "px";
+	/**
+	 * Moves the image depending on the given X and Y differences. The given
+	 * differences are transformed to relative movements for the image model.
+	 * The image is then redrawn.
+	 * 
+	 * @param {int} dx Number of pixels to move the image in X direction
+	 * @param {int} dy Number of pixels to move the image in Y direction
+	 */
+	move : function(dx, dy) {
+		var currentimage = this.months[this.currentmonth].image;
+		var pbounds = this.upperdiv.getBoundingClientRect();
+		var diffx = dx / pbounds.width;
+		var diffy = dy / pbounds.width;
+		currentimage.x += diffx;
+		currentimage.y += diffy;
+		this.updateImage();
 	},
+	/**
+	 * Scales the model of the image. The center of the scale is defined with px
+	 * and py. The current scale factor is replaced with the given one and the
+	 * image position is recalculated and updated.
+	 * 
+	 * @param {int} mx X coordinate of the scaling center relative to the placeholder.
+	 * @param {int} my Y coordinate of the scaling center relative to the placeholder.
+	 * @param {float} nis Absolute factor to scale the image.
+	 */
+	scaleAt : function(mx, my, nis) {
+		var currentimage = this.months[this.currentmonth].image;
+		var pbounds = this.upperdiv.getBoundingClientRect();
+		var pw = pbounds.width;
+		var is = currentimage.scale;
+		var icpx = currentimage.x;
+		var mxr = mx / pw - 0.5;
+		var nicpx = nis / is * (icpx - mxr) + mxr;
+		var icpy = currentimage.y;
+		var myr = my / pw - 0.5;
+		var nicpy = nis / is * (icpy - myr) + myr;
+		currentimage.scale = nis;
+		currentimage.x = nicpx;
+		currentimage.y = nicpy;
+		this.updateImage();
+	},
+	/**
+	 * Handles the resizing of the page and resizes the calendar keeping
+	 * its aspect ratio. Also redraws the image for the new size.
+	 */
 	handleResize : function() {
 		var self = this;
 		var contentwidth = self.contentdiv.offsetWidth;
@@ -135,5 +201,6 @@ Calendar = {
 		}
 		var topmargin = (self.calendardiv.offsetWidth / 21) | 0;
 		self.calendardiv.style.paddingTop = topmargin + "px";
+		self.updateImage();
 	}
 };

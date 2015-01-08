@@ -35,6 +35,7 @@ Account::requireValidUser();
 ?><!DOCTYPE html>
 <html class="CalendarPage">
     <head>
+<!--		<meta http-equiv="refresh" content="5" />-->
         <title><?php echo __('Edit calendar') ?></title>
         <?php Templates::includeTemplate('Head') ?>
         <script src="<?php echo App::getUrl('static/js/Dialog.js') ?>"></script>
@@ -44,7 +45,8 @@ Account::requireValidUser();
         <script type="text/javascript">
             // The calendar page is loaded when the document was loaded
             window.addEventListener('load', function() {
-                Calendar.renderCalendarPage('Content', 2015, 1);
+				Calendar.init();
+                Calendar.renderCalendarPage('Content');
             });
         </script>
     </head>

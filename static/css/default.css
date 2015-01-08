@@ -114,7 +114,7 @@ html.CalendarPage div.Tools { box-shadow:none; }
 html.CalendarPage div.Content { position:absolute;top:0;bottom:0;left:0;right:0; }
 html.CalendarPage div.Content > div.Calendar { position:relative;margin:auto; }
 html.CalendarPage div.Content > div.Calendar > img { position:absolute;top:0;left:0;width:100%;pointer-events: none; }
-html.CalendarPage div.Content > div.Calendar > div.Upper { border:solid #DFDFDF;border-width:1px 1px 0 1px;height:50%;background:#DDDDDD; }
+html.CalendarPage div.Content > div.Calendar > div.Upper { border:solid #DFDFDF;border-width:1px 1px 0 1px;height:50%;background:#DDDDDD no-repeat; }
 html.CalendarPage div.Content > div.Calendar > div.Lower { border:solid #DFDFDF;border-width:0 1px 1px 1px;height:50%;background:#FFFFFF; }
 
 p.notification { border:1px solid #888;background-color:#ccc;color:#888;padding:3px; }
