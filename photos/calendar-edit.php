@@ -59,10 +59,10 @@ Account::requireValidUser();
             </div>
         </div>
         <div class="Tools">
-            <button class="Close" />
-            <button class="Save" />
-            <button class="Settings" />
-            <button class="Delete" style="float:right;display:inherit;" />
+            <button class="Close"></button>
+            <button class="Save"></button>
+            <button class="Settings"></button>
+            <button class="Delete" style="float:right;display:inherit;"></button>
         </div>
         <div id="Content" class="Content"></div>
     </body>

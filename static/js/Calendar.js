@@ -105,18 +105,36 @@ Calendar = {
 		self.upperdiv.addEventListener("mousewheel", function(e) {
 			self.scaleAt(e.offsetX, e.offsetY, self.months[self.currentmonth].image.scale * (e.wheelDelta > 0 ? 1.02 : 0.98));
 		}, false);
+		self.upperdiv.addEventListener("DOMMouseScroll", function(e) { // For Firefox
+			self.scaleAt(e.layerX, e.layerY, self.months[self.currentmonth].image.scale * (e.detail < 0 ? 1.02 : 0.98));
+		}, false);
+		if (typeof MSGesture !== "undefined") { // Zooming for mobile IE
+			self.iegesture = new MSGesture();
+			self.iegesture.target = self.upperdiv;
+			self.upperdiv.addEventListener("pointerdown", function(e) { // For mobile IE
+				self.iegesture.addPointer(e.pointerId);
+			});
+			self.upperdiv.addEventListener("MSGestureChange", function(e) { // For mobile IE
+				if (e.scale !== 1) {
+					self.scaleAt(e.offsetX, e.offsetY, self.months[self.currentmonth].image.scale * e.scale);
+				}
+			}, false);
+		}
 		self.upperdiv.addEventListener("mousedown", function(e) {
-			this.movestartx = e.offsetX;
-			this.movestarty = e.offsetY;
+			this.movestartx = e.clientX;
+			this.movestarty = e.clientY;
+			this.mousedown = true;
+		}, false);
+		self.upperdiv.addEventListener("mouseup", function() {
+			this.mousedown = false;
 		}, false);
 		self.upperdiv.addEventListener("mousemove", function(e) {
-			if (e.which === 1) {
-				self.move(e.offsetX - this.movestartx, e.offsetY - this.movestarty);
-				this.movestartx = e.offsetX;
-				this.movestarty = e.offsetY;
+			if (this.mousedown) {
+				self.move(e.clientX - this.movestartx, e.clientY - this.movestarty);
+				this.movestartx = e.clientX;
+				this.movestarty = e.clientY;
 			}
 		}, false);
-
 		self.upperdiv.addEventListener("touchstart", function(e) {
 			if(e.touches.length === 1) {
 				this.touch1startx = e.touches[0].pageX;
@@ -128,6 +146,7 @@ Calendar = {
 				this.currentscale = self.months[self.currentmonth].image.scale;
 				this.touchmode = 'scale';
 			}
+			e.preventDefault();
 		}, false);
 		self.upperdiv.addEventListener("touchmove", function(e) {
 			if (e.touches.length === 1 && this.touchmode === 'move') {
@@ -147,6 +166,7 @@ Calendar = {
 				var centery = (e.touches[0].pageY + e.touches[1].pageY - 2 * rect.top) / 2;
 				self.scaleAt(centerx, centery, factor);
 			}
+			e.preventDefault();
 		}, false);
 		self.calendardiv.appendChild(self.upperdiv);
 		self.ringsimg = document.createElement("img");
@@ -167,14 +187,14 @@ Calendar = {
 			});
 		});
 		self.calendardiv.appendChild(selectbutton);
-		var lowerdiv = document.createElement("div");
-		lowerdiv.classList.add("Lower");
-		self.calendardiv.appendChild(lowerdiv);
+		self.lowerdiv = document.createElement("div");
+		self.lowerdiv.classList.add("Lower");
+		self.calendardiv.appendChild(self.lowerdiv);
 		self.monthnamediv = document.createElement("div");
 		self.monthnamediv.classList.add("Month");
-		lowerdiv.appendChild(self.monthnamediv);
+		self.lowerdiv.appendChild(self.monthnamediv);
 		var table = document.createElement("table");
-		lowerdiv.appendChild(table);
+		self.lowerdiv.appendChild(table);
 		self.monththead = document.createElement("thead");
 		table.appendChild(self.monththead);
 		var trh = document.createElement("tr");
