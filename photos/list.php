@@ -26,7 +26,6 @@
 
 /**
  * This page lists all media of the user in a descending date order.
- * The media files will be loaded on demand when the user scrolls.
  */
 
 require_once '../code/App.php';

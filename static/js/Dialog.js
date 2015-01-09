@@ -169,6 +169,12 @@ Dialog = {
         document.body.appendChild(dialog);
         document.body.classList.add("DialogOpen");
     },
+	/**
+	 * Shows an info dialog with a message and an OK button.
+	 * 
+	 * @param {string} message Message to show.
+	 * @param {function} callback Called when the user clicks on the OK button
+	 */
     info : function(message, callback) {
         var dialog = document.createElement("div");
         dialog.classList.add("Dialog");
@@ -190,6 +196,36 @@ Dialog = {
         dialog.appendChild(okbutton);
         document.body.appendChild(dialog);
         document.body.classList.add("DialogOpen");
+    },
+    properties : function(content, callback) {
+        var dialog = document.createElement("div");
+        dialog.classList.add("Dialog");
+        dialog.classList.add("Properties");
+        content.classList.add("DialogContent");
+        dialog.appendChild(content);
+        var donebutton = document.createElement("button");
+        donebutton.classList.add("Done");
+        donebutton.addEventListener("click", function() {
+            document.body.removeChild(dialog);
+            document.body.classList.remove("DialogOpen");
+			if (typeof callback !== "undefined") {
+				callback(true);
+			}
+        });
+        donebutton.innerHTML = '++##Done##--';
+        dialog.appendChild(donebutton);
+        var cancelbutton = document.createElement("button");
+        cancelbutton.classList.add("Cancel");
+        cancelbutton.addEventListener("click", function() {
+            document.body.removeChild(dialog);
+            document.body.classList.remove("DialogOpen");
+			if (typeof callback !== "undefined") {
+				callback(false);
+			}
+        });
+        cancelbutton.innerHTML = '++##Cancel##--';
+        dialog.appendChild(cancelbutton);
+        document.body.appendChild(dialog);
+        document.body.classList.add("DialogOpen");
     }
-
 };

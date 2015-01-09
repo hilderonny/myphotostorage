@@ -34,14 +34,17 @@ Calendar = {
 	/**
 	 * Initializes the calendar with new empty data and the year set to the 
 	 * current year. Used when making a new calendar.
+	 * Also renders the new calendar into the given DIV.
+	 * 
+	 * @param {string} contentdivid ID of the DIV to render the content into.
 	 */
-	init : function() {
+	init : function(contentdivid) {
 		this.id = null;
 		this.months = [];
 		for (var i = 0; i < 13; i++) { // In 0 is the cover image
 			this.months.push({
-				image : { // TODO: Initialize id with null
-					id : 141, // ID of the image to show
+				image : {
+					id : null, // ID of the image to show
 					x : 0, // X-Distance of the center of the image to the center of the placeholder relative to the placeholder width (-0.5 means that the center of the image is on the left border of the placeholder)
 					y : 0, // Y-Distance of the center of the image to the center of the placeholder relative to the placeholder width (yes, not relative to the height!)
 					scale : 1 } // Scale factor of the image relative to the placeholder width, 1 = the image has the width of the placeholder
@@ -49,6 +52,8 @@ Calendar = {
 		}
 		this.year = new Date().getFullYear();
 		this.currentmonth = 0; // 0 means that the cover is selected, else the month starting with 1 is selected
+		document.body.classList.add("New");
+		this.renderCalendarPage(contentdivid);
 	},
 	/**
 	 * Updates thew calendar to show the content of the current month (name,
@@ -67,6 +72,7 @@ Calendar = {
 			this.calendardiv.classList.remove("Cover");
 		} else {
 			this.calendardiv.classList.add("Cover");
+			this.titlediv.innerHTML = this.year;
 		}
 		this.previousbutton.style.display = this.currentmonth > 0 ? "inherit" : "none";
 		this.nextbutton.style.display = this.currentmonth < 12 ? "inherit" : "none";
@@ -185,7 +191,7 @@ Calendar = {
 		selectbutton.classList.add("Select");
 		selectbutton.addEventListener("click", function() {
 			Photos.selectPhoto(function(id) {
-				if (id !== false) {
+				if (id) {
 					var currentimage = self.months[self.currentmonth].image;
 					currentimage.id = id;
 					currentimage.x = 0;
@@ -238,6 +244,10 @@ Calendar = {
 			self.showCurrentMonth();
 		});
 		self.calendardiv.appendChild(self.nextbutton);
+		self.titlediv = document.createElement("div");
+		self.titlediv.classList.add("Title");
+		self.titlediv.innerHTML = self.year;
+		self.calendardiv.appendChild(self.titlediv);
 		window.addEventListener("resize", function() { self.handleResize(); });
 		self.handleResize();
 		self.showCurrentMonth();
@@ -294,7 +304,7 @@ Calendar = {
 		var self = this;
 		var contentwidth = self.contentdiv.offsetWidth;
 		var contentheight = self.contentdiv.offsetHeight;
-		var ratiowithrings = (297 - 10) / 210; // A4 + 10mm height for rings
+		var ratiowithrings = (297 + 10) / 210; // A4 + 10mm height for rings
 		if ((contentwidth * ratiowithrings) < contentheight) {
 			self.calendardiv.style.width = contentwidth + "px";
 			self.calendardiv.style.height = ((contentwidth * ratiowithrings) | 0) + "px";
@@ -305,6 +315,7 @@ Calendar = {
 		var calendarwidth = self.calendardiv.offsetWidth;
 		self.calendardiv.style.paddingTop = (calendarwidth / 21) + "px";
 		self.monthnamediv.style.fontSize = (calendarwidth * 0.04) + "px";
+		self.titlediv.style.fontSize = (calendarwidth * 0.15) + "px";
 		var ths = self.monththead.getElementsByTagName("th");
 		for (var i = 0; i < ths.length; i++) {
 			ths[i].style.fontSize = (calendarwidth * 0.02) + "px";
@@ -332,9 +343,95 @@ Calendar = {
 			self.id = response;
 			self.ischanged = false;
 			Dialog.info("++##Calendar was saved successfully.##--");
-			console.log(self.id);
+			document.body.classList.remove("New");
 			if (typeof callback !== "undefined") {
 				callback();
+			}
+		});
+	},
+	/**
+	 * Retrieve the list of calendars of the current user and renders it into 
+	 * the DIV with the given ID.
+	 */
+    getList : function(listNodeId) {
+        var self = this;
+        self.listNode = document.getElementById(listNodeId);
+        Helper.doRequest("getCalendarList", null, function(response) {
+			var calendars = JSON.parse(response);
+			for (var i = 0; i < calendars.length; i++) {
+				var calendar = calendars[i];
+				var calendardiv = document.createElement("div");
+				calendardiv.calendarId = calendar.id;
+				calendardiv.addEventListener("click", function() {
+					window.location.href = "calendar-edit.php?id=" + this.calendarId;
+				});
+				self.listNode.appendChild(calendardiv);
+				calendardiv.style.backgroundImage = "url(images.php?type=preview&id=" + calendar.image.id + ")";
+				calendardiv.style.backgroundSize = (calendar.image.scale * 100) + "%";
+				var pbounds = calendardiv.getBoundingClientRect();
+				var pw = pbounds.width;
+				var is = calendar.image.scale;
+				var icpx = calendar.image.x;
+				var ix = pw * ( icpx + (1 - is) / 2 );
+				var icpy = calendar.image.y;
+				var iy = pw * ( icpy + (1 - is) / 2 );
+				calendardiv.style.backgroundPosition = ix + "px " + iy + "px";
+				var titlediv = document.createElement("div");
+				titlediv.classList.add("Title");
+				console.log(calendar);
+				titlediv.innerHTML = calendar.year;
+				calendardiv.appendChild(titlediv);
+				titlediv.style.fontSize = (pw * 0.15) + "px";
+			}
+        });
+	},
+	/**
+	 * Loads the calendar with the given ID and renders it into the given DIV.
+	 * 
+	 * @param {string} id ID of the calendar to load
+	 * @param {string} contentdivid ID of the DIV where to render the calendar into
+	 */
+	load : function(id, contentdivid) {
+		var self = this;
+        Helper.doRequest("getCalendar", {id : id}, function(response) {
+			var calendar = JSON.parse(response);
+			self.id = calendar.id;
+			self.months = calendar.months;
+			self.year = calendar.year;
+			self.currentmonth = 0;
+			self.renderCalendarPage(contentdivid);
+		});
+    },
+	/**
+	 * Deletes the currently loaded calendar from the database. New calendars
+	 * which were not saved before, are simply deleted locally.
+	 * 
+	 * @param {function} callback Called when the deletion process was performed.
+	 */
+	delete : function(callback) {
+		if (this.id) {
+			console.log('DEL');
+	        Helper.doRequest("deleteCalendar", {id : this.id}, function() {
+				if (typeof callback !== "undefined") {
+					callback();
+				}
+			});
+		}
+	},
+	/**
+	 * Shows the settings dialog for the current calender and handles settings
+	 * changes.
+	 */
+	showSettings : function() {
+		var self = this;
+		var contentdiv = document.createElement("div");
+		var yearinput = document.createElement("input");
+		yearinput.value = self.year;
+		contentdiv.appendChild(yearinput);
+		Dialog.properties(contentdiv, function(done) {
+			if (done) {
+				self.year = yearinput.value;
+				self.showCurrentMonth();
 			}
 		});
 	}

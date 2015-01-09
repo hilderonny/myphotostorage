@@ -96,6 +96,7 @@ div.UploadProgress > div { height:18px;width:0%;background:#FFAF02;border-radius
 div.Tools { position: fixed;left: 240px;top: 0;right: 20px;height: 60px;border-bottom: 1px solid #FFAF02;z-index: 1;padding-top: 19px;background-color:rgba(255,255,255,0.95);box-shadow:0px 0px 20px 10px #fff; }
 div.Tools > button.Close { background: url(../img/close.svg) no-repeat center center;float:right;border:none;cursor:pointer;width:40px;height:40px;background-size: 32px 32px; }
 div.Tools > button.Delete { display:none;background: url(../img/delete.svg) no-repeat center center;float:left;border:none;cursor:pointer;width:40px;height:40px; }
+div.Tools > button.New { float:right;display:block;border:none;color:#FFAF02;padding:11px;cursor:pointer;background:none; }
 div.Tools > button.Save { background: url(../img/save.svg) no-repeat center center;float:right;border:none;cursor:pointer;width:40px;height:40px;background-size: 32px 32px; }
 div.Tools > button.Select { float:right;display:block;border:none;color:#FFAF02;padding:11px;cursor:pointer;background:none; }
 div.Tools > button.Settings { background: url(../img/settings.svg) no-repeat center center;float:right;border:none;cursor:pointer;width:40px;height:40px;background-size: 32px 32px; }
@@ -122,12 +123,19 @@ form.Simple label { display: inline-block;width:150px;color:#888;font-size:0.9em
 form.Simple input[type="text"], form.Simple input[type="email"], form.Simple input[type="password"] { display:inline-block;padding:3px; width:310px;margin:5px 0;box-shadow: inset 0 1px 3px #ddd;border: 1px solid #ccc;border-radius: 4px; }
 form.Simple input[type="submit"] { background: #ffaf02;color: #fff;border: 1px solid #eeb44f;border-radius: 3px;font-weight: bold;font-family: inherit;text-shadow: 0px 0px 3px #cc9f52;box-shadow: inset 0px 1px 1px 0px #fce2c1;padding: .5em 1.5em;margin:5px 0 5px 164px; }
 
+html.CalendarList div.Content > div { position:relative;background:#DDDDDD no-repeat;width:155px;height:219px;float:left;margin:7px 4px;cursor:pointer; }
+html.CalendarList div.Content > div:before { content:'';background:url(../img/calendar/a4-rings.svg) no-repeat 100%;width:155px;height:22px;position:relative;top:-7px;display:block; }
+html.CalendarList div.Content > div > div.Title { position:absolute;bottom:8%;width:100%;pointer-events:none;color:#EEEEEE;text-align:center;text-shadow:#666666 -1px 0px, #666666 1px 0px, #666666 0px -1px, #666666 0px 1px }
+
+html.CalendarPage > body.New > div.Tools > button.Delete { display:none !important; }
 html.CalendarPage div.Tools { box-shadow:none; }
 html.CalendarPage div.Content { position:absolute;top:0;bottom:0;left:0;right:0; }
 html.CalendarPage div.Content > div.Calendar { position:relative;margin:auto; }
+html.CalendarPage div.Content > div.Calendar > button { opacity: 0.3; }
+html.CalendarPage div.Content > div.Calendar:hover > button { opacity: 1; }
 html.CalendarPage div.Content > div.Calendar > button.Previous { cursor:pointer;position: absolute;background: url(../img/previous-photo.svg) no-repeat center center;height: 10%;width: 10%;border: none;background-size: 100%;top: 50%;margin-top: -4%;left: 0; }
 html.CalendarPage div.Content > div.Calendar > button.Next { cursor:pointer;position: absolute;background: url(../img/next-photo.svg) no-repeat center center;height: 10%;width: 10%;border: none;background-size: 100%;top: 50%;margin-top: -4%;right: 0; }
-html.CalendarPage div.Content > div.Calendar > button.Select { background: url(../img/select-photo.svg) no-repeat center center;width: 10%;height: 10%;border: none;cursor: pointer;position: absolute;top: 50%;left: 50%;margin: -9% 0 0 -5%; }
+html.CalendarPage div.Content > div.Calendar > button.Select { background: url(../img/select-photo.svg) no-repeat center center;width: 10%;height: 10%;border: none;cursor: pointer;position: absolute;top: 4%;left: 1%; }
 html.CalendarPage div.Content > div.Calendar > img { position:absolute;top:0;left:0;width:100%;pointer-events: none; }
 html.CalendarPage div.Content > div.Calendar > div.Lower { padding:3% 8%;border:solid #DFDFDF;border-width:0 1px 1px 1px;height:50%;background:#FFFFFF; }
 html.CalendarPage div.Content > div.Calendar > div.Lower > div.Month { padding-bottom:3%;text-align: center;font-weight:bold; }
@@ -136,10 +144,11 @@ html.CalendarPage div.Content > div.Calendar > div.Lower > table > tbody > tr { 
 html.CalendarPage div.Content > div.Calendar > div.Lower > table > tbody > tr > td { padding:0.5%; border:1px solid #DFDFDF; height:16.66% }
 html.CalendarPage div.Content > div.Calendar > div.Lower > table > tbody > tr > td:last-of-type { color:#D73E44; }
 html.CalendarPage div.Content > div.Calendar > div.Lower > table > thead > tr > th { font-weight:bold;text-align:center;padding:0.5%; }
+html.CalendarPage div.Content > div.Calendar > div.Title { display:none;position:absolute;bottom:8%;width:100%;pointer-events:none;color:#EEEEEE;text-align:center;text-shadow:#666666 -1px 0px, #666666 1px 0px, #666666 0px -1px, #666666 0px 1px }
 html.CalendarPage div.Content > div.Calendar > div.Upper { touch-action: none;border:solid #DFDFDF;border-width:1px 1px 0 1px;height:50%;background:#DDDDDD no-repeat;position:relative; }
-html.CalendarPage div.Content > div.Calendar.Cover > div.Upper { height:100%; }
 html.CalendarPage div.Content > div.Calendar.Cover > div.Lower { display:none; }
-html.CalendarPage div.Content > div.Calendar.Cover > button.Select { bottom: 0%;margin: 0 0 0 -5%;top: inherit; }
+html.CalendarPage div.Content > div.Calendar.Cover > div.Upper { height:100%; }
+html.CalendarPage div.Content > div.Calendar.Cover > div.Title { display:inherit; }
 
 p.notification { border:1px solid #888;background-color:#ccc;color:#888;padding:3px; }
 p.error { color:#800; background-color:#fcc;border-color:#800; }
@@ -179,6 +188,8 @@ p.info { color:#008; background-color:#ccf;border-color:#008; }
 	form.Simple input[type="submit"] { margin:inherit; }
 
 	html.CalendarPage div.Content { margin:45px 2px 2px 2px; }
+	html.CalendarPage div.Content > div.Calendar > button { opacity: 0.5; }
+	html.CalendarPage div.Content > div.Calendar:hover > button { opacity: 0.5; }
 }
 
 @media only screen and (max-width : 1024px) and (orientation : landscape) {

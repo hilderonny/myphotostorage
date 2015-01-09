@@ -38,4 +38,7 @@ switch ($action) {
 	case 'uploadPhoto': Photos::uploadPhoto($_FILES['file'], $userid); break;
 	case 'deletePhoto': Photos::deletePhoto(filter_input(INPUT_POST, 'id'), $userid); break;
 	case 'saveCalendar': echo Calendars::saveCalendar(filter_input(INPUT_POST, 'calendar'), $userid); break;
+	case 'getCalendarList': echo Calendars::getCalendarList($userid); break;
+	case 'getCalendar': echo Calendars::getCalendar(filter_input(INPUT_POST, 'id'), $userid); break;
+	case 'deleteCalendar': Calendars::deleteCalendar(filter_input(INPUT_POST, 'id'), $userid); break;
 }

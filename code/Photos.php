@@ -176,16 +176,16 @@ class Photos {
 		rename($file['tmp_name'], self::getMediaDir().$id);
 	}
 	
-        /**
-         * Deletes a photo with the given ID when the given user id the owner
-         * of the photo. When the user is not the owner, nothing is done and
-         * the function simply returns.
-         * First the photo files (preview, thumb, photo) get deleted and then
-         * the metadata in the database.
-         * 
-         * @param int $id ID of the photo to delete.
-         * @param int $userid ID of the owner user of the photo.
-         */
+	/**
+	 * Deletes a photo with the given ID when the given user id the owner
+	 * of the photo. When the user is not the owner, nothing is done and
+	 * the function simply returns.
+	 * First the photo files (preview, thumb, photo) get deleted and then
+	 * the metadata in the database.
+	 * 
+	 * @param int $id ID of the photo to delete.
+	 * @param int $userid ID of the owner user of the photo.
+	 */
 	static function deletePhoto($id, $userid) {
 		$escapedid = Persistence::escape($id);
 		$tableprefix = $GLOBALS['tableprefix'];

@@ -25,7 +25,7 @@
  */
 
 /**
- * This page is for editing calendars.
+ * This page lists all calendars of the user ordered by name ascending.
  */
 
 require_once '../code/App.php';
@@ -33,54 +33,28 @@ require_once '../code/App.php';
 Account::requireValidUser();
 
 ?><!DOCTYPE html>
-<html class="CalendarPage">
+<html class="CalendarList">
     <head>
-<!--		<meta http-equiv="refresh" content="5" />-->
-        <title><?php echo __('Edit calendar') ?></title>
+        <title><?php echo __('Calendars') ?></title>
         <?php Templates::includeTemplate('Head') ?>
         <script src="<?php echo App::getUrl('static/js/Helper.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Dialog.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
-        <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Calendar.js') ?>"></script>
         <script type="text/javascript">
-            // The calendar page is loaded when the document was loaded
+            // The photos list is loaded after showing the page via AJAX.
             window.addEventListener('load', function() {
-				<?php if ($id = filter_input(INPUT_GET, 'id')) : ?>
-				Calendar.load(<?php echo $id ?>, 'Content');
-				<?php else : ?>
-				Calendar.init('Content');
-				<?php endif ?>
+                Calendar.getList('CalendarList');
             });
-			function handleDeleteClick() {
-				Dialog.confirm('<?php echo __('Do you really want to delete this calendar?') ?>', function(reallydelete) {
-					if (reallydelete) {
-						Calendar.delete(function() {
-							window.location.href = 'calendar-list.php';
-						});
-					}
-				});
-			}
-			function handleSaveClick() {
-				Calendar.save();
-			}
-			function handleCloseClick() {
-				if (Calendar.ischanged) {
-					Dialog.confirm('<?php echo __('Do you want to close the calendar without saving the changes?') ?>', function(forceclose) {
-						if (forceclose) {
-							window.location.href = 'calendar-list.php';
-						}
-					});
-				} else {
-					window.location.href = 'calendar-list.php';
-				}
-			}
-			function handleSettingsClick() {
-				Calendar.showSettings();
+			function handleNewClick() {
+				window.location.href = 'calendar-edit.php';
 			}
         </script>
     </head>
     <body>
+        <div class="Tools">
+            <button class="New" onclick="handleNewClick();"><?php echo __('Add calendar') ?></button>
+        </div>
         <div class="Menu">
             <button onclick="Menu.handleClick(this);"></button>
             <div>
@@ -88,12 +62,6 @@ Account::requireValidUser();
                 <?php Templates::includeTemplate('PhotoMenu') ?>
             </div>
         </div>
-        <div class="Tools">
-            <button class="Close" onclick="handleCloseClick();" />
-            <button class="Save" onclick="handleSaveClick();" />
-            <button class="Settings" onclick="handleSettingsClick();" />
-            <button class="Delete" onclick="handleDeleteClick();" style="float:right;display:inherit;" />
-        </div>
-        <div id="Content" class="Content"></div>
+        <div id="CalendarList" class="Content CalendarList"></div>
     </body>
 </html>
