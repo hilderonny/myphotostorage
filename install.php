@@ -67,10 +67,10 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 } else {
 	// Single GET page call
 	$databasehost = 'localhost';
-	$databaseusername = '';
-	$databasepassword = '';
+	$databaseusername = 'myphotostorage';
+	$databasepassword = 'myphotostorage';
 	$databasename = 'myphotostorage';
-	$tableprefix = '';
+	$tableprefix = 'mps_';
 	$defaultlanguage = 'en';
 	$databaseerror = true;
 	$installationprogress = false;

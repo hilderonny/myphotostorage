@@ -178,6 +178,7 @@ class Install {
 		$result .= self::createAndUpdateTable('media', ['media_mimetype' => 'varchar(50)', 'media_location' => 'varchar(50)', 'media_owner_users_id' => ['bigint unsigned', 'users'], 'media_date' => 'bigint unsigned']);
 		$result .= self::createAndUpdateTable('albums', ['albums_owner_users_id' => ['bigint unsigned', 'users'], 'albums_name' => 'varchar(255)', 'albums_public' => 'tinyint(1)']);
 		$result .= self::createAndUpdateTable('albummedia', ['albummedia_albums_id' => ['bigint unsigned', 'albums'], 'albummedia_media_id' => ['bigint unsigned', 'media']]);
+		$result .= self::createAndUpdateTable('calendars', ['calendars_owner_users_id' => ['bigint unsigned', 'users'], 'calendars_name' => 'varchar(255)', 'calendars_public' => 'tinyint(1)', 'calendars_data' => 'text']);
 		return $result;
 	}
 }
