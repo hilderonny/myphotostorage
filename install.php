@@ -60,19 +60,24 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 		$installationprogress = Install::createLocalConfig();
 		// Perform the database installation
 		$installationprogress .= Install::createAndUpdateTables($tableprefix);
-		$installationprogress .= '<p class="success">'.sprintf(__('The installation is completed. You should now delete the %s file for security reasons.'), 'install.php').'</p>';
+		rename('install.php', 'install.php.bak');
+		$installationprogress .= '<p class="success">'.sprintf(__('The installation is completed. The %s file was renamed to %s for security reasons.'), 'install.php', 'install.php.bak').'</p>';
 	} else {
 		$installationprogress = false;
 	}
 } else {
 	// Single GET page call
-	$databasehost = 'localhost';
-	$databaseusername = 'myphotostorage';
-	$databasepassword = 'myphotostorage';
-	$databasename = 'myphotostorage';
-	$tableprefix = 'mps_';
-	$defaultlanguage = 'en';
-	$databaseerror = true;
+	if (file_exists('config/localconfig.inc.php')) {
+		require_once 'config/localconfig.inc.php';
+	} else {
+		$databasehost = 'localhost';
+		$databaseusername = '';
+		$databasepassword = '';
+		$databasename = '';
+		$tableprefix = 'mps_';
+		$defaultlanguage = 'en';
+	}
+	$databaseerror = null;
 	$installationprogress = false;
 }
 
@@ -86,7 +91,7 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 	</head>
 	<body>
 		<h1><?php echo __('Install MyPhotoStorage') ?></h1>
-		<form method="post" class="simple install">
+		<form method="post" action="install.php#end" class="simple install">
 			<h2><?php echo __('File system check') ?></h2>
 			<div>
 				<?php if ($candeleteinstallsript) : ?>
@@ -137,9 +142,9 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 				<label><?php echo __('Table prefix') ?></label>
 				<input type="text" name="tableprefix" value="<?php echo $tableprefix ?>" />
 				<?php endif ?>
-				<?php if ($databaseerror) : ?>
+				<?php if ($databaseerror === true) : ?>
 				<p class="error"><?php echo __('Cannot access database. Please check the settings above.') ?></p>
-				<?php else : ?>
+				<?php elseif ($databaseerror === false) : ?>
 				<p class="success"><?php echo __('Database connection succeeded.') ?></p>
 				<?php endif ?>
 			</div>
@@ -159,5 +164,6 @@ if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
 			<div><a href="account/register.php"><?php echo __('Register a new account') ?></a></div>
 			<?php endif ?>
 		</form>
+		<a name="end"></a>
 	</body>
 </html>
