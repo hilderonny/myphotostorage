@@ -28,38 +28,6 @@
 Photos = {
 
     /**
-     * Performs an asynchronous ajax request to the ajax.php page.
-     * 
-     * @param {string} action Action to perform on the server
-     * @param {array} postdata Associative array of post data to send to the server. Provide null if not used.
-     * @param {function} completecallback Callback which is called, when the request is completed. Contains the response of the request.
-     * @param {function} progresscallback Callback for file uploads which is called multiply with upload progress information. Provide null if not used.
-     */
-    doRequest : function(action, postdata, completecallback, progresscallback) {
-        var self = this;
-        self.xhr = new XMLHttpRequest();
-        var formdata = new FormData();
-        self.xhr.open("POST", "ajax.php", true);
-        if (typeof progresscallback === 'function') {
-            self.xhr.upload.addEventListener("progress", progresscallback, false);
-        }
-        if (typeof completecallback === 'function') {
-            self.xhr.onreadystatechange = function() {
-                if (self.xhr.readyState === 4 && self.xhr.status === 200) {
-                    completecallback(self.xhr.responseText);
-                }
-            };
-        }
-        formdata.append("action", action);
-        if (postdata !== null) {
-            for (var key in postdata) {
-                formdata.append(key, postdata[key]);
-            }
-        }
-        self.xhr.send(formdata);
-    },
-
-    /**
      * Constructs the list of all photos of the user.
      * 
      * @param {string} listNodeId ID of the DOM element where to put the photos
@@ -73,7 +41,7 @@ Photos = {
         var self = this;
         this.listNode = document.getElementById(listNodeId);
         this.listNode.selectedImageCount = 0;
-        this.doRequest("getPhotoList", null, function(response) {
+        Helper.doRequest("getPhotoList", null, function(response) {
             var photoIdsList = JSON.parse(response);
             var monthnames = {"01" : "++##January##--", "02" : "++##February##--", "03" : "++##March##--", "04" : "++##April##--", "05" : "++##May##--", "06" : "++##June##--", "07" : "++##July##--", "08" : "++##August##--", "09" : "++##September##--", "10" : "++##October##--", "11" : "++##November##--", "12" : "++##December##--" };
             for (var yearmonth in photoIdsList) {
@@ -139,7 +107,7 @@ Photos = {
         if (!self.uploading || files.length <= index) {
             return;
         }
-        this.doRequest("uploadPhoto", {file : files[index]}, function(response) {
+        Helper.doRequest("uploadPhoto", {file : files[index]}, function(response) {
             fileprogresscallback(100);
             fileuploadedcallback(index);
             self.uploadFiles(files, index + 1, fileuploadedcallback, fileprogresscallback);
@@ -283,7 +251,7 @@ Photos = {
             var percent = processedfilecount * 100 / self.filecount;
             self.progressdialog.setProgress(percent, self.messagetemplate.replace("{0}", processedfilecount + 1).replace("{1}", self.filecount));
             var imagenode = imagenodes.shift();
-            self.doRequest('deletePhoto', { id : imagenode.photoId }, function(response) {
+            Helper.doRequest('deletePhoto', { id : imagenode.photoId }, function(response) {
                 var monthlistnode = imagenode.parentNode.parentNode;
                 monthlistnode.removeChild(imagenode.parentNode);
                 if (monthlistnode.childNodes.length < 1) {
@@ -372,10 +340,19 @@ Photos = {
 		self.previewcontainer.appendChild(nextbutton);
 		document.body.classList.add("PhotoPreview");
 	},
+	/**
+	 * Shows up a dialog where the user can select one photo from his photo
+	 * list. Used in calendars.
+	 * 
+	 * @param {function} selectListener Callback to be called when the user
+	 * has selected a photo. The only parameter id can be false when the user
+	 * cancels the selection, null when the user selects nothing and presses
+	 * Done or the id of the selected photo.
+	 */
     selectPhoto : function(selectListener) {
 		var self = this;
 		self.selectedImage = null;
-        this.doRequest("getPhotoList", null, function(response) {
+        Helper.doRequest("getPhotoList", null, function(response) {
 			var content = document.createElement("div");
             var photoIdsList = JSON.parse(response);
             for (var yearmonth in photoIdsList) {

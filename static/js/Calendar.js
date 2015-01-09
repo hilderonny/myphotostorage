@@ -32,6 +32,7 @@ Calendar = {
 	 * current year. Used when making a new calendar.
 	 */
 	init : function() {
+		this.id = null;
 		this.months = [];
 		for (var i = 0; i < 13; i++) { // In 0 is the cover image
 			this.months.push({
@@ -45,6 +46,10 @@ Calendar = {
 		this.year = new Date().getFullYear();
 		this.currentmonth = 0; // 0 means that the cover is selected, else the month starting with 1 is selected
 	},
+	/**
+	 * Updates thew calendar to show the content of the current month (name,
+	 * days and image). Also handles showing the cover page and loads the image.
+	 */
 	showCurrentMonth : function() {
 		if (this.currentmonth > 0) {
 			var monthnames = ["++##January##--", "++##February##--", "++##March##--", "++##April##--", "++##May##--", "++##June##--", "++##July##--", "++##August##--", "++##September##--", "++##October##--", "++##November##--", "++##December##--" ];
@@ -283,5 +288,26 @@ Calendar = {
 			tds[i].style.fontSize = (calendarwidth * 0.015) + "px";
 		}
 		self.updateImage();
+	},
+	/**
+	 * Saves the current calendar to the server by transferring it as JSON via
+	 * POST. When storing a new calendar, the new id is returned and stored in this class.
+	 * 
+	 * @param {function} callback Called when the transfer was successful.
+	 */
+	save : function(callback) {
+		var self = this;
+		var data = {
+			id : this.id,
+			year : this.year,
+			months : this.months
+		};
+		Helper.doRequest("saveCalendar", {calendar : JSON.stringify(data)}, function(response) {
+			self.id = response;
+			console.log("Saved successfully with id " + self.id);
+			if (typeof callback !== "undefined") {
+				callback();
+			}
+		});
 	}
 };

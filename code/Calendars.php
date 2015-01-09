@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2014 Ronny Hildebrandt <ronny.hildebrandt@avorium.de>.
@@ -25,17 +25,25 @@
  */
 
 /**
- * This file is used as server endpoint for photo specific ajax requests.
+ * Class for handling calendars
+ *
+ * @author Ronny Hildebrandt <ronny.hildebrandt@avorium.de>
  */
-
-require_once '../code/App.php';
-
-$action = filter_input(INPUT_POST, 'action');
-$userid = $_SESSION['userid'];
-
-switch ($action) {
-	case 'getPhotoList': echo Photos::getPhotoList($userid); break;
-	case 'uploadPhoto': Photos::uploadPhoto($_FILES['file'], $userid); break;
-	case 'deletePhoto': Photos::deletePhoto(filter_input(INPUT_POST, 'id'), $userid); break;
-	case 'saveCalendar': echo Calendars::saveCalendar(filter_input(INPUT_POST, 'calendar'), $userid); break;
+class Calendars {
+		
+	static function saveCalendar($calendarjson, $userid) {
+		$data = json_decode($calendarjson);
+		$id = $data->id;
+		unset($data->id);
+		$value = Persistence::escape(json_encode($data));
+		$tableprefix = $GLOBALS['tableprefix'];
+		if ($id) {
+			$query = 'update '.$tableprefix.'calendars set '.$tableprefix.'calendars_data = \''.$value.'\' where '.$tableprefix.'calendars_id = '.$id.' order by '.$tableprefix.'calendars_name asc';
+			Persistence::query($query);
+			return $id;
+		} else {
+			$query = 'insert into '.$tableprefix.'calendars ('.$tableprefix.'calendars_owner_users_id, '.$tableprefix.'calendars_data) values ('.$userid.', \''.$value.'\')';
+			return Persistence::query($query);
+		}
+	}
 }

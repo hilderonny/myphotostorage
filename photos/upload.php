@@ -41,6 +41,7 @@ Account::requireValidUser();
     <head>
         <title><?php echo __('Upload photos') ?></title>
         <?php Templates::includeTemplate('Head') ?>
+        <script src="<?php echo App::getUrl('static/js/Helper.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
         <script type="text/javascript">

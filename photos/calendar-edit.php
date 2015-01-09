@@ -38,6 +38,7 @@ Account::requireValidUser();
 <!--		<meta http-equiv="refresh" content="5" />-->
         <title><?php echo __('Edit calendar') ?></title>
         <?php Templates::includeTemplate('Head') ?>
+        <script src="<?php echo App::getUrl('static/js/Helper.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Dialog.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Menu.js') ?>"></script>
         <script src="<?php echo App::getUrl('static/js/Photos.js') ?>"></script>
@@ -48,6 +49,9 @@ Account::requireValidUser();
 				Calendar.init();
                 Calendar.renderCalendarPage('Content');
             });
+			function handleSaveClick() {
+				Calendar.save();
+			}
         </script>
     </head>
     <body>
@@ -60,7 +64,7 @@ Account::requireValidUser();
         </div>
         <div class="Tools">
             <button class="Close" />
-            <button class="Save" />
+            <button class="Save" onclick="handleSaveClick();" />
             <button class="Settings" />
             <button class="Delete" style="float:right;display:inherit;" />
         </div>
