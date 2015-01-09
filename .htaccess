@@ -3,6 +3,8 @@ DirectoryIndex index.php
 RewriteEngine On
 # JS and CSS files are parsed to enable translations
 RewriteRule ^(static/css|static/js)(.*)$ static.php [L]
+# Deny access to install.php.bak when it exists
+RewriteRule ^install.php.bak$ - [F,L,NC]
 # Set maximum upload size, maybe that you need to set it in the php.ini file
 php_value upload_max_filesize 1224M
 php_value post_max_size 1224M
