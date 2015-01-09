@@ -28,6 +28,10 @@
  */
 Calendar = {
 	/**
+	 * @type Boolean Defines whether the calendar was changed since open or last save.
+	 */
+	ischanged : false,
+	/**
 	 * Initializes the calendar with new empty data and the year set to the 
 	 * current year. Used when making a new calendar.
 	 */
@@ -247,6 +251,7 @@ Calendar = {
 	 * @param {int} dy Number of pixels to move the image in Y direction
 	 */
 	move : function(dx, dy) {
+		this.ischanged = true;
 		var currentimage = this.months[this.currentmonth].image;
 		var pbounds = this.upperdiv.getBoundingClientRect();
 		var diffx = dx / pbounds.width;
@@ -265,6 +270,7 @@ Calendar = {
 	 * @param {float} nis Absolute factor to scale the image.
 	 */
 	scaleAt : function(mx, my, nis) {
+		this.ischanged = true;
 		var currentimage = this.months[this.currentmonth].image;
 		var pbounds = this.upperdiv.getBoundingClientRect();
 		var pw = pbounds.width;
@@ -324,7 +330,9 @@ Calendar = {
 		};
 		Helper.doRequest("saveCalendar", {calendar : JSON.stringify(data)}, function(response) {
 			self.id = response;
-			console.log("Saved successfully with id " + self.id);
+			self.ischanged = false;
+			Dialog.info("++##Calendar was saved successfully.##--");
+			console.log(self.id);
 			if (typeof callback !== "undefined") {
 				callback();
 			}

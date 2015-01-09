@@ -52,6 +52,17 @@ Account::requireValidUser();
 			function handleSaveClick() {
 				Calendar.save();
 			}
+			function handleCloseClick() {
+				if (Calendar.ischanged) {
+					Dialog.confirm('<?php echo __('Do you want to close the calendar without saving the changes?') ?>', function(forceclose) {
+						if (forceclose) {
+							window.location.href = 'calendar-list.php';
+						}
+					});
+				} else {
+					window.location.href = 'calendar-list.php';
+				}
+			}
         </script>
     </head>
     <body>
@@ -63,7 +74,7 @@ Account::requireValidUser();
             </div>
         </div>
         <div class="Tools">
-            <button class="Close" />
+            <button class="Close" onclick="handleCloseClick();" />
             <button class="Save" onclick="handleSaveClick();" />
             <button class="Settings" />
             <button class="Delete" style="float:right;display:inherit;" />

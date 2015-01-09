@@ -45,6 +45,7 @@ div.Dialog > div.Message { margin:10px; }
 div.Dialog > button { cursor:pointer;background: #ffaf02;color: #fff;border: 1px solid #eeb44f;border-radius: 3px;font-weight: bold;font-family: inherit;text-shadow: 0px 0px 3px #cc9f52;box-shadow: inset 0px 1px 1px 0px #fce2c1;padding: .5em 1.5em;width:100px; }
 div.Dialog.Confirm > button.OK { margin: 0 4px 10px 45px; }
 div.Dialog.Confirm > button.Cancel { margin: 0 45px 10px 4px; }
+div.Dialog.Info > button.OK { margin: 0 0 10px -50px;position: relative;left: 50%; }
 div.Dialog.Progress > div.UploadProgress { margin:20px 10px; }
 div.Dialog.Progress > button.Cancel  { margin:0 100px 10px 100px; }
 div.Dialog.Select { width: inherit;left: 5px;right: 5px;margin: inherit;top: 5px;bottom: 5px; }

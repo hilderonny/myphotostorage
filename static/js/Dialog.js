@@ -49,7 +49,9 @@ Dialog = {
         donebutton.addEventListener("click", function() {
             document.body.removeChild(dialog);
             document.body.classList.remove("DialogOpen");
-            callback(true);
+			if (typeof callback !== "undefined") {
+				callback(true);
+			}
         });
         donebutton.innerHTML = '++##Yes##--';
         dialog.appendChild(donebutton);
@@ -58,7 +60,9 @@ Dialog = {
         cancelbutton.addEventListener("click", function() {
             document.body.removeChild(dialog);
             document.body.classList.remove("DialogOpen");
-            callback(false);
+			if (typeof callback !== "undefined") {
+				callback(false);
+			}
         });
         cancelbutton.innerHTML = '++##No##--';
         dialog.appendChild(cancelbutton);
@@ -113,7 +117,9 @@ Dialog = {
         var cancelbutton = document.createElement("button");
         cancelbutton.classList.add("Cancel");
         cancelbutton.addEventListener("click", function() {
-            cancelcallback();
+			if (typeof cancelcallback !== "undefined") {
+				cancelcallback();
+			}
             dialog.close();
         });
         cancelbutton.innerHTML = '++##Cancel##--';
@@ -143,7 +149,9 @@ Dialog = {
         donebutton.addEventListener("click", function() {
             document.body.removeChild(dialog);
             document.body.classList.remove("DialogOpen");
-            doneCallback();
+			if (typeof doneCallback !== "undefined") {
+				doneCallback();
+			}
         });
         donebutton.innerHTML = '++##Done##--';
         dialog.appendChild(donebutton);
@@ -152,10 +160,34 @@ Dialog = {
         cancelbutton.addEventListener("click", function() {
             document.body.removeChild(dialog);
             document.body.classList.remove("DialogOpen");
-            cancelCallback();
+			if (typeof cancelCallback !== "undefined") {
+				cancelCallback();
+			}
         });
         cancelbutton.innerHTML = '++##Cancel##--';
         dialog.appendChild(cancelbutton);
+        document.body.appendChild(dialog);
+        document.body.classList.add("DialogOpen");
+    },
+    info : function(message, callback) {
+        var dialog = document.createElement("div");
+        dialog.classList.add("Dialog");
+        dialog.classList.add("Info");
+        var messagediv = document.createElement("div");
+        messagediv.classList.add("Message");
+        messagediv.innerHTML = message;
+        dialog.appendChild(messagediv);
+        var okbutton = document.createElement("button");
+        okbutton.classList.add("OK");
+        okbutton.addEventListener("click", function() {
+            document.body.removeChild(dialog);
+            document.body.classList.remove("DialogOpen");
+			if (typeof callback !== "undefined") {
+				callback();
+			}
+        });
+        okbutton.innerHTML = '++##OK##--';
+        dialog.appendChild(okbutton);
         document.body.appendChild(dialog);
         document.body.classList.add("DialogOpen");
     }
