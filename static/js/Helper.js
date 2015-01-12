@@ -47,6 +47,7 @@ Helper = {
             self.xhr.onreadystatechange = function() {
                 if (self.xhr.readyState === 4 && self.xhr.status === 200) {
                     completecallback(self.xhr.responseText);
+					self.xhr = false;
                 }
             };
         }
@@ -57,5 +58,13 @@ Helper = {
             }
         }
         self.xhr.send(formdata);
-    }
+    },
+	/**
+	 * Cancales a request which is currently in progress.
+	 */
+	abortRequest : function() {
+		if (self.xhr) {
+			self.xhr.abort();
+		}
+	}
 };

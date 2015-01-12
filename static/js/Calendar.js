@@ -425,12 +425,25 @@ Calendar = {
 	showSettings : function() {
 		var self = this;
 		var contentdiv = document.createElement("div");
-		var yearinput = document.createElement("input");
+		var label = document.createElement("label");
+		label.innerHTML = "++##Year##--";
+		contentdiv.appendChild(label);
+		var yearinput = document.createElement("select");
+		var currentyear = new Date().getFullYear();
+		for (var i = currentyear - 50; i <= currentyear + 50; i++) {
+			var option = document.createElement("option");
+			option.value = i;
+			option.innerHTML = i;
+			if (i === self.year) {
+				option.setAttribute("checked", "checked");
+			}
+			yearinput.appendChild(option);
+		}
 		yearinput.value = self.year;
 		contentdiv.appendChild(yearinput);
 		Dialog.properties(contentdiv, function(done) {
 			if (done) {
-				self.year = yearinput.value;
+				self.year = yearinput.options[yearinput.selectedIndex].value;
 				self.showCurrentMonth();
 			}
 		});

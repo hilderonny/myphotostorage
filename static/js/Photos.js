@@ -161,7 +161,7 @@ Photos = {
      */
     cancelUpload : function() {
         this.uploading = false;
-        this.xhr.abort();
+        Helper.abortRequest();
     },
     /**
      * Handles zooming the photo list when moving the range input.

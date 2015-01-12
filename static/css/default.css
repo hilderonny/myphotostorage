@@ -42,12 +42,16 @@ body.PhotoPreview::before { content: "";background:rgba(0,0,0,0.9);position: fix
 
 div.Dialog { background: #FFF;position: fixed;top: 20px;width: 300px;z-index: 501;margin-left:-150px;left: 50%;border:1px solid #FFAF02; }
 div.Dialog > div.Message { margin:10px; }
-div.Dialog > button { cursor:pointer;background: #ffaf02;color: #fff;border: 1px solid #eeb44f;border-radius: 3px;font-weight: bold;font-family: inherit;text-shadow: 0px 0px 3px #cc9f52;box-shadow: inset 0px 1px 1px 0px #fce2c1;padding: .5em 1.5em;width:100px; }
+div.Dialog > button { cursor:pointer;background: #ffaf02;color: #fff;border: 1px solid #eeb44f;border-radius: 3px;font-weight: bold;font-family: inherit;text-shadow: 0px 0px 3px #cc9f52;box-shadow: inset 0px 1px 1px 0px #fce2c1;padding:5px 0;width:100px; }
 div.Dialog.Confirm > button.OK { margin: 0 4px 10px 45px; }
 div.Dialog.Confirm > button.Cancel { margin: 0 45px 10px 4px; }
 div.Dialog.Info > button.OK { margin: 0 0 10px -50px;position: relative;left: 50%; }
 div.Dialog.Progress > div.UploadProgress { margin:20px 10px; }
 div.Dialog.Progress > button.Cancel  { margin:0 100px 10px 100px; }
+div.Dialog.Properties > button.Done { margin: 0 4px 10px 45px; }
+div.Dialog.Properties > button.Cancel { margin: 0 45px 10px 4px; }
+div.Dialog.Properties > div.DialogContent > label { display: inline-block;width: 140px;text-align: right;margin: 10px 4px; }
+div.Dialog.Properties > div.DialogContent > select {display: inline-block;width: 140px;text-align: right;margin: 10px 4px;}
 div.Dialog.Select { width: inherit;left: 5px;right: 5px;margin: inherit;top: 5px;bottom: 5px; }
 div.Dialog.Select > button { display: block;border: none;color: #FFAF02;padding: 11px;cursor: pointer;background: none;border-radius:0;font-weight:inherit;text-shadow:none;box-shadow:none;width:inherit; }
 div.Dialog.Select > button.Done { float: right; }
