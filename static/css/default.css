@@ -123,9 +123,12 @@ form.Simple h1 { font-size:2em;background-color:#FDF6E5;color:#000;margin:0;padd
 form.Simple div { padding:10px; }
 form.Simple p { margin: 5px 0; }
 form.Simple a { color:#FFAF02;margin-left:164px;}
-form.Simple label { display: inline-block;width:150px;color:#888;font-size:0.9em;text-align: right;margin-right:10px; }
+form.Simple button { cursor:pointer;background: #ffaf02;color: #fff;border: 1px solid #eeb44f;border-radius: 3px;font-weight: bold;font-family: inherit;text-shadow: 0px 0px 3px #cc9f52;box-shadow: inset 0px 1px 1px 0px #fce2c1;padding: .5em 1.5em;margin:5px 0 5px 164px; }
+form.Simple button.Red { background: #FF0000;border-color:#cc0000;text-shadow: 0px 0px 3px #cc0000;box-shadow: inset 0px 1px 1px 0px #ffdddd; }
 form.Simple input[type="text"], form.Simple input[type="email"], form.Simple input[type="password"] { display:inline-block;padding:3px; width:310px;margin:5px 0;box-shadow: inset 0 1px 3px #ddd;border: 1px solid #ccc;border-radius: 4px; }
-form.Simple input[type="submit"] { background: #ffaf02;color: #fff;border: 1px solid #eeb44f;border-radius: 3px;font-weight: bold;font-family: inherit;text-shadow: 0px 0px 3px #cc9f52;box-shadow: inset 0px 1px 1px 0px #fce2c1;padding: .5em 1.5em;margin:5px 0 5px 164px; }
+form.Simple input[type="submit"] { cursor:pointer;background: #ffaf02;color: #fff;border: 1px solid #eeb44f;border-radius: 3px;font-weight: bold;font-family: inherit;text-shadow: 0px 0px 3px #cc9f52;box-shadow: inset 0px 1px 1px 0px #fce2c1;padding: .5em 1.5em;margin:5px 0 5px 164px; }
+form.Simple span { display:inline-block;padding:3px; width:310px;margin:5px 0; }
+form.Simple label { display: inline-block;width:150px;color:#888;font-size:0.9em;text-align: right;margin-right:10px; }
 
 html.CalendarList div.Content > div { position:relative;background:#DDDDDD no-repeat;width:155px;height:219px;float:left;margin:7px 4px;cursor:pointer; }
 html.CalendarList div.Content > div:before { content:'';background:url(../img/calendar/a4-rings.svg) no-repeat 100%;width:155px;height:22px;position:relative;top:-7px;display:block; }
@@ -187,6 +190,7 @@ p.info { color:#008; background-color:#ccf;border-color:#008; }
 	form.Simple { width:inherit;margin:10px; }
 	form.Simple h1 { font-size:1.5em; }
 	form.Simple a { margin:inherit; }
+	form.Simple button { margin:inherit; }
 	form.Simple label { display:block;width:inherit;text-align:left; }
 	form.Simple input[type="text"], form.Simple input[type="email"], form.Simple input[type="password"] { margin-bottom:10px;display:block;width:100%; }
 	form.Simple input[type="submit"] { margin:inherit; }

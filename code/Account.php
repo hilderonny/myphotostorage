@@ -182,4 +182,90 @@ class Account {
 			header('Location: '.App::getUrl('account/login.php?redirecturl='.urlencode(filter_input(INPUT_SERVER, 'REQUEST_URI'))));
 		}
 	}
+	
+	/**
+	 * Returns the username and email address for the user with the given ID
+	 * @param string $userid ID of the user to retrieve
+	 * @return array Array containing username and email of the user or false when no user
+	 * with the given ID exists.
+	 */
+	static function getUser($userid) {
+		$tableprefix = $GLOBALS['tableprefix'];
+        $userquery = sprintf('select '.$tableprefix.'users_username, '.$tableprefix.'users_email from '.$tableprefix.'users where '.$tableprefix.'users_id=%s', Persistence::escape($userid));
+        $users = Persistence::query($userquery);
+        if (count($users) < 1) {
+            return false;
+        }
+		$account = [
+			'username' => $users[0][$tableprefix.'users_username'],
+			'email' => $users[0][$tableprefix.'users_email']
+		];
+		return $account;
+	}
+	
+	/**
+	 * Updates the email or password of an user.
+	 * 
+	 * @param int $userid ID of the user to change
+	 * @param string $newemail New email of the user. Must not be the email of another user.
+	 * @param string $newpassword New password for the user. If not set, the password will not be changed
+	 * @param string $newpassword2 New password again. Must match $newpassword
+	 * @return string Error message or false when all was done well.
+	 */
+	static function updateUser($userid, $newemail, $newpassword, $newpassword2) {
+		$tableprefix = $GLOBALS['tableprefix'];
+		$escapeduserid = Persistence::escape($userid);
+        $userquery = sprintf('select '.$tableprefix.'users_username, '.$tableprefix.'users_email from '.$tableprefix.'users where '.$tableprefix.'users_id=%s', $escapeduserid);
+        $users = Persistence::query($userquery);
+        if (count($users) < 1) {
+            return false;
+		}
+		$user = $users[0];
+		// Check whether the email changed and check if the new email is assigned to another user.
+		$escapednewemail = Persistence::escape($newemail);
+		if ($user[$tableprefix.'users_email'] !== $newemail) {
+			$existingusers = Persistence::query('select '.$tableprefix.'users_id from '.$tableprefix.'users where '.$tableprefix.'users_email=\''.$escapednewemail.'\' and '.$tableprefix.'users_id != '.$escapeduserid);
+			if (count($existingusers) > 0) {
+				return __('An user with the given email address already exists. Please choose another one.');
+			}
+			$updatequery = sprintf('update '.$tableprefix.'users set '.$tableprefix.'users_email = \'%s\' where '.$tableprefix.'users_id = %s', $escapednewemail, $escapeduserid);
+			Persistence::query($updatequery);
+		}
+		// Check whether the password needs to be changed
+		if ($newpassword || $newpassword2) {
+			if ($newpassword !== $newpassword2) {
+				return __('The passwords do not match.');
+			}
+			$hashedpassword = password_hash($newpassword, PASSWORD_DEFAULT);
+			$escapedpassword = Persistence::escape($hashedpassword);
+			$updatequery = sprintf('update '.$tableprefix.'users set '.$tableprefix.'users_password = \'%s\' where '.$tableprefix.'users_id = %s', $escapedpassword, $escapeduserid);
+			Persistence::query($updatequery);
+		}
+	}
+	
+	static function deleteUser($userid) {
+		$tableprefix = $GLOBALS['tableprefix'];
+		$escapeduserid = Persistence::escape($userid);
+		// Delete media files
+		$query = '
+			select '.$tableprefix.'media_id
+			from '.$tableprefix.'media
+			where '.$tableprefix.'media_owner_users_id = '.$escapeduserid.'
+			';
+		$photos = Persistence::query($query);
+		if (count($photos) < 1) {
+			return;
+		}
+		for ($i = 0; $i < count($photos); $i++) {
+			// Delete files
+			unlink(Photos::getMediaDir().$photos[$i][$tableprefix.'media_id'].'.preview');
+			unlink(Photos::getMediaDir().$photos[$i][$tableprefix.'media_id'].'.thumb');
+			unlink(Photos::getMediaDir().$photos[$i][$tableprefix.'media_id']);
+		}
+		// Delete user from database. Foreign keys handle the deletion of appended meta data
+		$deletequery = 'delete from '.$tableprefix.'users where '.$tableprefix.'users_id = '.$escapeduserid;
+		Persistence::query($deletequery);
+		self::logout();
+		return "OK";
+	}
 }
