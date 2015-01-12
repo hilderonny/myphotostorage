@@ -44,8 +44,8 @@ class Templates {
      */
     static function includeTemplate($templatename) {
         $preferredlanguage = Localization::getPreferredVisitorLanguage();
-        $localizedfilename = 'templates/'.$templatename.$preferredlanguage.'.phtml';
-        $fallbackfilename = 'templates/'.$templatename.'.phtml';
+        $localizedfilename = __DIR__.'/../templates/'.$templatename.'.'.$preferredlanguage.'.phtml';
+        $fallbackfilename = __DIR__.'/../templates/'.$templatename.'.phtml';
         if (file_exists($localizedfilename)) {
             include $localizedfilename;
         } else {
